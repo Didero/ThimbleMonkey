@@ -146,10 +146,11 @@ class MainWindow(QtWidgets.QMainWindow):
 				if subWindow == activeSubWindow:
 					# Some files don't need converting, they can be saved as-is
 					if not shouldConvertData or fileEntry.fileExtension in ('.bank', '.otf', '.png', '.tsv', '.ttf', 'txt'):
-						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)
+						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
+						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)[0]
 						# If the user cancels, the dialog returns None
 						if savePath:
-							savePath = savePath[0]  # 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former
+							savePath = savePath[0]
 							with open(savePath, 'wb') as saveFile:
 								saveFile.write(GGPackParser.getPackedFile(fileEntry))
 					else:
@@ -163,10 +164,10 @@ class MainWindow(QtWidgets.QMainWindow):
 							fileData = json.dumps(fileData, indent=2)
 						elif isinstance(fileData, Image):
 							saveDialogFilterString += '.png'
-						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)
+						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
+						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
 						# If the user cancels, the dialog returns None
 						if savePath:
-							savePath = savePath[0]  # 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former
 							if isinstance(fileData, Image):
 								fileData.save(savePath)
 							else:
