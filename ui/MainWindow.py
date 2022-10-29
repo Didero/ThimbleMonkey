@@ -150,7 +150,6 @@ class MainWindow(QtWidgets.QMainWindow):
 						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)[0]
 						# If the user cancels, the dialog returns None
 						if savePath:
-							savePath = savePath[0]
 							with open(savePath, 'wb') as saveFile:
 								saveFile.write(GGPackParser.getPackedFile(fileEntry))
 					else:
