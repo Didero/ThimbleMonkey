@@ -161,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
 						if isinstance(fileData, str):
 							saveDialogFilterString += '.txt'
 						elif isinstance(fileData, dict):
-							saveDialogFilterString += '.json'
+							saveDialogFilterString += '.txt'
 							fileData = json.dumps(fileData, indent=2)
 						elif isinstance(fileData, Image):
 							saveDialogFilterString += '.png'
