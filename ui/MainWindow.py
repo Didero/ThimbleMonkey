@@ -6,6 +6,7 @@ from PIL import ImageQt
 from PIL.Image import Image
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from enums.Game import Game
 from fileparsers import GGPackParser
 from models.FileEntry import FileEntry
 from ui import WidgetHelpers
@@ -94,8 +95,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			if '.ggpack' not in fn or os.path.isdir(gameFilePath):
 				continue
 			fileIndex = GGPackParser.getFileIndex(gameFilePath)
+			game = Game.ggpackPathToGameName(fn)
 			for fileEntryData in fileIndex['files']:
-				fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath)
+				fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath, game)
 				packedFileEntries.append(fileEntry)
 		self.updateWindowTitle(gamePath)
 		self.packedFileBrowser.showFilesInFileBrowser(packedFileEntries)

@@ -54,10 +54,10 @@ def _decodeYack(encodedYackBytes: bytes, yackFilename: str) -> bytes:
 	# Based on https://github.com/jonsth131/ggtool/blob/main/libdinky/src/decoder.rs
 	decodedYackBytes = bytearray(len(encodedYackBytes))
 	val = len(os.path.basename(yackFilename)) - 5  # Subtract the '.yack' file extension
-	keyLength = len(Keys.KEY_YACK)
+	keyLength = len(Keys.RTMI_KEY_YACK)
 	for index in range(len(encodedYackBytes)):
 		keyIndex = (index + val) % keyLength
-		decodedYackBytes[index] = encodedYackBytes[index] ^ Keys.KEY_YACK[keyIndex]
+		decodedYackBytes[index] = encodedYackBytes[index] ^ Keys.RTMI_KEY_YACK[keyIndex]
 	return bytes(decodedYackBytes)
 
 def fromYack(encodedYackBytes: bytes, yackFilename: str) -> List[str]:

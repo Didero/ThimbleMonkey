@@ -3,13 +3,13 @@ Thimbleweed Park, Delores, and Return To Monkey Island store some data in a spec
 This class can read, parse, and write them
 """
 
-import json
 from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List
 
 import Utils
 from CustomExceptions import DecodeError, GGDictError
+from enums.Game import Game
 
 
 class _ValueType(Enum):
@@ -31,11 +31,11 @@ _STRING_OFFSETS_START = b'\x07'
 _STRINGS_START = b'\x08'
 
 
-def fromGgDict(sourceData: bytes, useShortStringIndex: bool):
+def fromGgDict(sourceData: bytes, sourceGame: Game):
 	"""
 	This class parses the provided data into a GGDict, if it's valid
 	:param sourceData: The data to parse into a GGDict
-	:param useShortStringIndex: Whether to use 2 bytes or 4 bytes to read string indexes. Thimbleweed Park and Delores use 4 bytes ('False'), Return To Monkey Island uses 2 bytes ('True')
+	:param sourceGame: The game that the source data came from. This is needed beacuse some parts of ggdict parsing differ between games
 	:return: The parsed structure, usually a dictionary
 	"""
 	# Verify the header to see if the source data is parsable
@@ -64,7 +64,7 @@ def fromGgDict(sourceData: bytes, useShortStringIndex: bool):
 	# The section after the offsetsListStart explains how the strings are organised
 	sourceDataAsIo = BytesIO(sourceData)
 	sourceDataAsIo.seek(12)
-	return _readValue(sourceDataAsIo, stringList, useShortStringIndex)
+	return _readValue(sourceDataAsIo, stringList, sourceGame == Game.RETURN_TO_MONKEY_ISLAND)
 
 def _readValue(sourceData: BytesIO, stringList: List[str], useShortStringIndex: bool):
 	valueType = sourceData.read(1)
@@ -125,17 +125,17 @@ def _verifyBlockIsClosed(sourceData, valueTypeToClose: _ValueType):
 	if closeByte != valueTypeToClose.value:
 		raise GGDictError(f"ValueType wasn't closed properly. Expected {valueTypeToClose.value} but was {closeByte} (At position {sourceData.tell():,})")
 
-def toGgDict(valueToConvert, useShortStringIndex: bool) -> bytes:
+def toGgDict(valueToConvert, targetGame: Game) -> bytes:
 	"""
 	Convert the provided value into a GGDict structure that Thimbleweed Park, Delores, and Return To Monkey Island can understand
 	:param valueToConvert: The value to convert. Should usually be a dictionary
-	:param useShortStringIndex: Whether to use 2 bytes or 4 bytes to read string indexes. Thimbleweed Park and Delores use 4 bytes ('False'), Return To Monkey Island uses 2 bytes ('True')
+	:param targetGame: The game that the ggdict is for. This is needed beacuse some parts of ggdict parsing differ between games
 	:return: The GGDict structure
 	"""
 	# Create the dict structure itself first. Later we'll add the offsets and the stringlist, but we need this size to be able to calculate offsets
 	stringList: List[str] = []
 	ggdictOutput = bytearray()
-	_writeValue(ggdictOutput, stringList, useShortStringIndex, valueToConvert)
+	_writeValue(ggdictOutput, stringList, targetGame == Game.RETURN_TO_MONKEY_ISLAND, valueToConvert)
 	# Now we can create the string offsets and strings (The +4 is for the int indicating the offset where the string offsets list starts)
 	stringIndexOffset = len(_HEADER) + len(_VERSION_HEADER) + 4 + len(ggdictOutput)
 	output = bytearray()

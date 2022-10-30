@@ -1,6 +1,8 @@
 import os
 from typing import Union
 
+from enums.Game import Game
+
 
 class FileEntry:
 	"""
@@ -8,12 +10,14 @@ class FileEntry:
 	It knows in which ggpack-file it is, and where
 	"""
 
-	def __init__(self, filename: str, offset: int, size: int, packFilePath: str):
+	def __init__(self, filename: str, offset: int, size: int, packFilePath: str, game: Game):
 		self.filename: str = filename
 		self.offset: int = offset
 		self.size: int = size
 		self.packFilePath: str = packFilePath
+
 		self._fileExtension: Union[None, str] = None
+		self.game: Game = game
 
 	@property
 	def fileExtension(self) -> str:
