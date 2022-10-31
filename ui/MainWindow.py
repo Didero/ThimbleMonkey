@@ -94,11 +94,14 @@ class MainWindow(QtWidgets.QMainWindow):
 			gameFilePath = os.path.join(gamePath, fn)
 			if '.ggpack' not in fn or os.path.isdir(gameFilePath):
 				continue
-			fileIndex = GGPackParser.getFileIndex(gameFilePath)
-			game = Game.ggpackPathToGameName(fn)
-			for fileEntryData in fileIndex['files']:
-				fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath, game)
-				packedFileEntries.append(fileEntry)
+			try:
+				fileIndex = GGPackParser.getFileIndex(gameFilePath)
+				game = Game.ggpackPathToGameName(fn)
+				for fileEntryData in fileIndex['files']:
+					fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath, game)
+					packedFileEntries.append(fileEntry)
+			except Exception as e:
+				WidgetHelpers.showErrorMessage("Error Opening GGPack", f"An error occurred while trying to load '{gameFilePath}':\n\n{e}", self)
 		self.updateWindowTitle(gamePath)
 		self.packedFileBrowser.showFilesInFileBrowser(packedFileEntries)
 
@@ -111,7 +114,10 @@ class MainWindow(QtWidgets.QMainWindow):
 			if fileEntryToLoad in self._displayedFileEntries:
 				# Apparently the window isn't shown anymore, forget it
 				self._displayedFileEntries.pop(fileEntryToLoad)
-			self.showFileData(fileEntryToLoad)
+			try:
+				self.showFileData(fileEntryToLoad)
+			except Exception as e:
+				WidgetHelpers.showErrorMessage("Error Showing File", f"An error occurred while trying to display '{fileEntryToLoad.filename}':\n\n{e}")
 
 	def showFileData(self, fileEntryToShow: FileEntry):
 		dataToShow = GGPackParser.getConvertedPackedFile(fileEntryToShow)
