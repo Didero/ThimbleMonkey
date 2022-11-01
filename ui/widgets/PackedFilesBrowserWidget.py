@@ -24,7 +24,7 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		self._fileBrowser.setMinimumWidth(450)
 		self._fileBrowser.sizePolicy().setHorizontalPolicy(QtWidgets.QSizePolicy.MinimumExpanding)
 		self._fileBrowser.setUniformRowHeights(True)
-		self._fileBrowser.itemDoubleClicked.connect(self._emitLoadFileEvent)
+		self._fileBrowser.itemClicked.connect(self._emitLoadFileEvent)
 		layout.addWidget(self._fileBrowser)
 
 		# Label that shows the number of files, or how many files were filtered
