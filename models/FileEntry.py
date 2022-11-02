@@ -22,7 +22,7 @@ class FileEntry:
 	@property
 	def fileExtension(self) -> str:
 		if self._fileExtension is None:
-			self._fileExtension = os.path.basename(self.filename)[-1]
+			self._fileExtension = os.path.splitext(self.filename)[-1]
 		return self._fileExtension
 
 	def __str__(self):
