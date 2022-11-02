@@ -40,11 +40,11 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 
 		filterContainerLayout.addWidget(QtWidgets.QLabel('Filter:'))
 		self._filterTextInput = QtWidgets.QLineEdit()
-		self._filterTextInput.returnPressed.connect(self._filterFileBrowser)
+		self._filterTextInput.returnPressed.connect(self._onFilter)
 		filterContainerLayout.addWidget(self._filterTextInput)
 
 		startFilterButton = QtWidgets.QPushButton('🔍')
-		startFilterButton.clicked.connect(self._filterFileBrowser)
+		startFilterButton.clicked.connect(self._onFilter)
 		filterContainerLayout.addWidget(startFilterButton)
 
 		clearFilterButton = QtWidgets.QPushButton('X')
@@ -71,7 +71,7 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 				self._fileBrowser.resizeColumnToContents(i)
 			# Re-enable sorting
 			self._fileBrowser.setSortingEnabled(True)
-		self._filterFileBrowser()  # Filtering also updates the file count label
+		self._onFilter()  # Filtering also updates the file count label
 
 	def _updateFileCountLabel(self):
 		filterText = self._filterTextInput.text().strip()
@@ -97,8 +97,10 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		self.loadFileSignal.emit(fileEntryToLoad)
 
 	@QtCore.Slot()
-	def _filterFileBrowser(self, *args):
-		filterText = self._filterTextInput.text().strip()
+	def _onFilter(self, *args):
+		self.filterFileBrowser(self._filterTextInput.text().strip())
+
+	def filterFileBrowser(self, filterText: str):
 		if not filterText:
 			self._clearFileBrowserFilter()
 			return

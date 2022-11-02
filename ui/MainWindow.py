@@ -19,18 +19,21 @@ from ui.widgets.TextDisplayWidget import TextDisplayWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
-	def __init__(self, pathToLoadOnStart: str = None):
+	def __init__(self, pathToLoadOnStart: str = None, filterOnStart: str = None):
 		super().__init__()
 		self.resize(1920, 1280)
 		self._centerWindowOnScreen()
 		self._initUi()
 		self._initMenuBar()
 		self.setStatusBar(QtWidgets.QStatusBar(self))
-		if pathToLoadOnStart:
-			self.setGamePath(pathToLoadOnStart)
+		self.gamePath: str = ''
 		# Store the opened subwindows in here, so we can't open one file multiple times (Don't use filenames for this, with mods there can be duplicates)
 		self._displayedFileEntries: WeakValueDictionary[FileEntry, QtWidgets.QMdiSubWindow] = WeakValueDictionary()
 
+		if pathToLoadOnStart:
+			self.setGamePath(pathToLoadOnStart)
+		if filterOnStart:
+			self.packedFileBrowser.filterFileBrowser(filterOnStart)
 	def _centerWindowOnScreen(self):
 		frameGm = self.frameGeometry()
 		screen = QtGui.QGuiApplication.primaryScreen()
