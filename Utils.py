@@ -1,5 +1,6 @@
-import hashlib, struct
-from typing import BinaryIO
+import struct
+from enum import Enum, IntEnum
+from typing import BinaryIO, Type
 
 def _parseFromFormatString(dataToParse: bytes, formatString: str):
 	return struct.unpack(formatString, dataToParse)[0]
@@ -59,3 +60,14 @@ def toStringInt(i: int) -> str:
 
 def getPrintableBytes(b: bytes) -> str:
 	return b.hex(' ', 1)
+
+def getEnumValue(enumToSearch: Type[Enum], valueToSearchFor, defaultValue):
+	for enumEntry in enumToSearch:
+		if valueToSearchFor == enumEntry.value:
+			return enumEntry
+	return defaultValue
+
+def getIntEnumValue(intEnum: Type[IntEnum], intToSearchFor: int, defaultValue):
+	if intToSearchFor in intEnum.__members__.values():
+		return intEnum(intToSearchFor)
+	return defaultValue
