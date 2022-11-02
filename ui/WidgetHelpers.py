@@ -11,6 +11,12 @@ def createMenuAction(parentMenu: QtWidgets.QMenu, actionLabel: str, actionMethod
 	parentMenu.addAction(action)
 	return action
 
+def createButton(buttonText: str, onPressMethod: Callable, parentLayout: QtWidgets.QLayout = None) -> QtWidgets.QPushButton:
+	button = QtWidgets.QPushButton(buttonText)
+	button.clicked.connect(onPressMethod)
+	parentLayout.addWidget(button)
+	return button
+
 def showErrorMessage(title: str, message: str, parent: QtWidgets.QWidget = None):
 	messageBox = QtWidgets.QMessageBox()
 	messageBox.setWindowTitle(title)
