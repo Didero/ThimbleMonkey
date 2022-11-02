@@ -94,42 +94,41 @@ def getPackedFile(fileEntry: FileEntry) -> bytes:
 		return decodeGameData(encodedFileData, fileEntry.game)
 
 def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, List, Image.Image, str]:
-	fileExtension = os.path.splitext(fileEntry.filename)[-1]
 	fileData = getPackedFile(fileEntry)
 	# All extensions and their counts:
 	# - Thimbleweed Park: .bnut: 187, .byack: 118, .fnt: 32, .json: 421, .lip: 14,294, .nut: 1, .ogg: 17,272, .png: 566, .tsv: 6, .txt: 42, .wav: 644, .wimpy: 163,
 	# - Delores: .bank: 2, .dink: 1, .dinky: 1, .json: 61, .png: 50, .tsv: 9, .ttf: 7, .txt: 2, .wimpy: 22, .yack: 11,
 	# - Return To Monkey Island: .anim: 663, .atlas: 663, .attach: 11, .bank: 7, .blend: 112, .dink: 1, .dinky: 1, .emitter: 157, .json: 292, .ktxbz: 1,152, .lip: 19,610, .otf: 5, .png: 3, .tsv: 20, .ttf: 33, .txt: 31, .wimpy: 159, .yack: 66
 	# TODO Extensions that need implementing: .bnut: 187, .byack: 118, .fnt: 32, .bank: 7, .dink: 1, .nut: 1, .ogg: 17,272, .wav: 644
-	if fileExtension in ('.atlas', '.blend', '.dinky', '.lip', '.txt'):
+	if fileEntry.fileExtension in ('.atlas', '.blend', '.dinky', '.lip', '.txt'):
 		# Basic text
 		return fileData.decode('utf-8')
-	elif fileExtension in ('.anim', '.attach'):
+	elif fileEntry.fileExtension in ('.anim', '.attach'):
 		# Text formatted as JSON, return a dict
 		return json.loads(fileData)
-	elif fileExtension in ('.emitter', '.wimpy'):
+	elif fileEntry.fileExtension in ('.emitter', '.wimpy'):
 		# A GGDict, parse it to a dict and return that
 		return GGDictParser.fromGgDict(fileData, fileEntry.game)
-	elif fileExtension == '.json':
+	elif fileEntry.fileExtension == '.json':
 		# This can either be an actual JSON file, or a GGDict. Determine which it is
 		if fileData[0] == 0x7B:  # 0x7B is the ASCII code for '{', which a plain JSON file starts with
 			# Normal JSON file
 			return json.loads(fileData)
 		else:
 			return GGDictParser.fromGgDict(fileData, fileEntry.game)
-	elif fileExtension == '.dink':
+	elif fileEntry.fileExtension == '.dink':
 		# Dink script, return it parsed
 		return DinkParser.DinkParser.fromDink(fileData)
-	elif fileExtension == '.yack':
+	elif fileEntry.fileExtension == '.yack':
 		# Yack script, return it parsed
 		return "\n\n".join(YackParser.fromYack(fileData, fileEntry.filename))
-	elif fileExtension in ('.ktx', '.ktxbz'):
+	elif fileEntry.fileExtension in ('.ktx', '.ktxbz'):
 		# Compressed image, return it as a Pillow image
 		return KtxParser.fromKtx(fileData, fileEntry.filename, 1)[0]
-	elif fileExtension == '.png':
+	elif fileEntry.fileExtension == '.png':
 		# Basic image, return it as a Pillow image
 		return Image.open(io.BytesIO(fileData))
-	elif fileExtension == '.tsv':
+	elif fileEntry.fileExtension == '.tsv':
 		# Tab-separated file, return it as a list of lists of strings
 		table: List[List[str]] = []
 		for row in fileData.decode('utf-8').splitlines():
@@ -137,10 +136,10 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, List, Ima
 			table.append(rowList)
 			rowList.extend(row.split('\t'))
 		return table
-	elif fileExtension in ('.otf', '.ttf'):
+	elif fileEntry.fileExtension in ('.otf', '.ttf'):
 		# Font files, return them as they are
 		return fileData
-	print(f"Unknown/unsupported file extension '{fileExtension}' for file entry '{fileEntry}'")
+	print(f"Unknown/unsupported file extension '{fileEntry.fileExtension}' for file entry '{fileEntry}'")
 	return fileData
 
 def createPackFile(filenamesToPack: Union[List[str], Tuple[str]], packFilename: str, targetGame: Game):

@@ -139,8 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			widgetToShow = TableDisplayWidget(fileEntryToShow, dataToShow)
 		elif isinstance(dataToShow, bytes):
 			# These need a bit more parsing, depending on file extension
-			fileExtension = os.path.splitext(fileEntryToShow.filename)[-1]
-			if fileExtension in ('.otf', '.ttf'):
+			if fileEntryToShow.fileExtension in ('.otf', '.ttf'):
 				widgetToShow = FontDisplayWidget(fileEntryToShow, dataToShow)
 		if not widgetToShow:
 			raise NotImplementedError(f"Showing file entry '{fileEntryToShow}' has not been implemented yet")
