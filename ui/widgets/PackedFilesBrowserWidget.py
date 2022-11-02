@@ -5,6 +5,7 @@ from typing import List
 from PySide6 import QtCore, QtWidgets
 
 from models.FileEntry import FileEntry
+from ui import WidgetHelpers
 
 
 class PackedFilesBrowserWidget(QtWidgets.QWidget):
