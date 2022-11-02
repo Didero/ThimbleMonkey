@@ -118,7 +118,7 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, List, Ima
 			return GGDictParser.fromGgDict(fileData, fileEntry.game)
 	elif fileEntry.fileExtension == '.dink':
 		# Dink script, return it parsed
-		return DinkParser.DinkParser.fromDink(fileData)
+		return DinkParser.DinkParser.fromDink(fileData, fileEntry.game)
 	elif fileEntry.fileExtension == '.yack':
 		# Yack script, return it parsed
 		return "\n\n".join(YackParser.fromYack(fileData, fileEntry.filename))
