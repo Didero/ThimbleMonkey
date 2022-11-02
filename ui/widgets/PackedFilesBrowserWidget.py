@@ -43,13 +43,8 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		self._filterTextInput.returnPressed.connect(self._onFilter)
 		filterContainerLayout.addWidget(self._filterTextInput)
 
-		startFilterButton = QtWidgets.QPushButton('🔍')
-		startFilterButton.clicked.connect(self._onFilter)
-		filterContainerLayout.addWidget(startFilterButton)
-
-		clearFilterButton = QtWidgets.QPushButton('X')
-		clearFilterButton.clicked.connect(self._clearFileBrowserFilter)
-		filterContainerLayout.addWidget(clearFilterButton)
+		WidgetHelpers.createButton('🔍', self._onFilter, filterContainerLayout)
+		WidgetHelpers.createButton('X', self._clearFileBrowserFilter, filterContainerLayout)
 		layout.addWidget(filterContainer)
 
 	def showFilesInFileBrowser(self, packedFileEntries: List[FileEntry]):
