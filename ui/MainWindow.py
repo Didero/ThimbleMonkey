@@ -87,7 +87,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	@QtCore.Slot()
 	def _browseForGamePath(self):
-		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Load RtMI Game Folder")
+		path = QtWidgets.QFileDialog.getExistingDirectory(self, "Load Game Folder", dir=self.gamePath)
 		# 'path' is None if the file dialog is dismissed
 		if path:
 			self.setGamePath(path)
@@ -107,6 +107,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			except Exception as e:
 				traceback.print_exc()
 				WidgetHelpers.showErrorMessage("Error Opening GGPack", f"An error occurred while trying to load '{gameFilePath}':\n\n{e}", self)
+		self.gamePath = gamePath
 		self.updateWindowTitle(gamePath)
 		self.packedFileBrowser.showFilesInFileBrowser(packedFileEntries)
 
