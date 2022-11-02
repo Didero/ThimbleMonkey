@@ -1,4 +1,4 @@
-import json, os
+import json, os, traceback
 from typing import List
 from weakref import WeakValueDictionary
 
@@ -34,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.setGamePath(pathToLoadOnStart)
 		if filterOnStart:
 			self.packedFileBrowser.filterFileBrowser(filterOnStart)
+
 	def _centerWindowOnScreen(self):
 		frameGm = self.frameGeometry()
 		screen = QtGui.QGuiApplication.primaryScreen()
@@ -104,6 +105,7 @@ class MainWindow(QtWidgets.QMainWindow):
 					fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath, game)
 					packedFileEntries.append(fileEntry)
 			except Exception as e:
+				traceback.print_exc()
 				WidgetHelpers.showErrorMessage("Error Opening GGPack", f"An error occurred while trying to load '{gameFilePath}':\n\n{e}", self)
 		self.updateWindowTitle(gamePath)
 		self.packedFileBrowser.showFilesInFileBrowser(packedFileEntries)
@@ -120,6 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			try:
 				self.showFileData(fileEntryToLoad)
 			except Exception as e:
+				traceback.print_exc()
 				WidgetHelpers.showErrorMessage("Error Showing File", f"An error occurred while trying to display '{fileEntryToLoad.filename}':\n\n{e}")
 
 	def showFileData(self, fileEntryToShow: FileEntry):
