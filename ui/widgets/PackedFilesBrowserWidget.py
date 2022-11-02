@@ -97,6 +97,8 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		self.filterFileBrowser(self._filterTextInput.text().strip())
 
 	def filterFileBrowser(self, filterText: str):
+		if self._filterTextInput.text() != filterText:
+			self._filterTextInput.setText(filterText)
 		if not filterText:
 			self._clearFileBrowserFilter()
 			return
