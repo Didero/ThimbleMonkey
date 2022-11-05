@@ -185,7 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
 								fileData.save(savePath)
 							else:
 								writeMode = 'w' if isinstance(fileData, str) else 'wb'
-								with open(savePath, writeMode) as saveFile:
+								with open(savePath, writeMode, encoding='utf-8') as saveFile:
 									saveFile.write(fileData)
 					return
 			else:
