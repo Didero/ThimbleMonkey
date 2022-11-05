@@ -65,7 +65,7 @@ class DinkOpCodeDelores(IntEnum):
 	OP_JUMP_TOPFALSE = 58
 	OP_TERNARY = 59
 	OP_NEW_TABLE = 60
-	OP_NEW_ARRAY = 61
+	OP_NEW_ARRAY = 61  # Parameter 3 stores the array size
 	OP_NEW_SLOT = 62
 	OP_NEW_THIS_SLOT = 63
 	OP_DELETE_SLOT = 64
@@ -125,7 +125,7 @@ class DinkOpCodeRtmi(IntEnum):
 	OP_JUMP_TOPFALSE = 44
 	OP_TERNARY = 45
 	OP_NEW_TABLE = 46
-	OP_NEW_ARRAY = 47
+	OP_NEW_ARRAY = 47  # Parameter3 stores the array size
 	OP_NEW_SLOT = 48
 	OP_NEW_THIS_SLOT = 49
 	OP_DELETE_SLOT = 50
