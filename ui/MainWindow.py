@@ -69,7 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		WidgetHelpers.createMenuAction(fileMenu, "&Load game folder...", self._browseForGamePath, "Load the game files in the provided folder")
 		fileMenu.addSeparator()
 		WidgetHelpers.createMenuAction(fileMenu, "&Save curent tab data", lambda: self.saveTabData(False), "Save tab data exactly how it's stored")
-		WidgetHelpers.createMenuAction(fileMenu, "&Export current tab data", lambda: self.saveTabData(True), "Export the tab data as something usable")
+		WidgetHelpers.createMenuAction(fileMenu, "&Convert and save current tab data", lambda: self.saveTabData(True), "Convert and save the tab data as something usable")
 		fileMenu.addSeparator()
 		WidgetHelpers.createMenuAction(fileMenu, "E&xit", self.close, "Exits the application")
 
