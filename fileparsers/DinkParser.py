@@ -1,6 +1,7 @@
 """Parses the RtMI DinkParser file, which contains Dinky files, which are the game's scripts"""
 # Based on https://github.com/bgbennyboy/Dinky-Explorer/blob/master/ThimbleweedLibrary/DinkDisassembler.cs. Thanks!
 
+from collections import OrderedDict
 from io import BytesIO
 from typing import Dict, List, Tuple, Union
 
@@ -8,7 +9,7 @@ import Utils
 from CustomExceptions import DinkError
 from enums.Game import Game
 from fileparsers.dinkhelpers.DinkType import DinkBlockType, DinkVariableType
-from fileparsers.dinkhelpers.DinkScript import DinkScript, DinkFunction, DinkInstruction, DinkInstructionSegment
+from fileparsers.dinkhelpers.DinkScript import DinkScript, DinkFunction, DinkInstructionOperation, DinkInstructionLine
 
 
 class DinkParser:
@@ -18,8 +19,25 @@ class DinkParser:
 
 	@staticmethod
 	def fromDink(sourceData: bytes, game: Game) -> str:
+		"""
+		Converts the provided Dink filedata into human-readable text
+		:param sourceData: The sourcedata to parse into Dink text
+		:param game: Which game the sourcedata is from. This is needed because parsing between games is slightly different
+		:return: The multiline text that can be shown to a user
+		"""
+		scripts = DinkParser.fromDinkToScripts(sourceData, game)
+		return DinkParser.fromDinkScriptDictToStrings(scripts)
+
+	@staticmethod
+	def fromDinkToScripts(sourceData: bytes, game: Game) -> Dict[str, DinkScript]:
+		"""
+		Converts the provided Dink filedata into parsed DinkScripts
+		:param sourceData: The soucedata, probably read from a file or through a FileEntry
+		:param game: Which game the sourcedata is from. This is needed because parsing between games is slightly different
+		:return: A dictionary with the keys being script names and the values being the parsed script objects
+		"""
 		dinkReader = BytesIO(sourceData)
-		scripts: Dict[str, DinkScript] = {}
+		scripts: OrderedDict[str, DinkScript] = OrderedDict()
 		# Read through all the functions
 		while True:
 			blockStart = dinkReader.read(4)
@@ -29,16 +47,18 @@ class DinkParser:
 			elif blockStart != DinkBlockType.FUNCTION_START.value:
 				raise DinkError(f"Invalid DinkParser file, expected block start at offset {dinkReader.tell() - 4}, but found {blockStart}")
 			DinkParser._readFunction(dinkReader, scripts, game)
-		print('--------')
+		return scripts
+
+	@staticmethod
+	def fromDinkScriptDictToStrings(scripts: Dict[str, DinkScript]) -> str:
+		"""
+		Turns the provided DinkScripts into human-readable text
+		:param scripts: The script names and objects to turn into human-readable text
+		:return: The multiline text that can be shown to a user
+		"""
 		resultLines: List[str] = ["WARNING: These results are probably inaccurate"]
-		for scriptName, dinkScript in scripts.items():
-			resultLines.append(scriptName)
-			for function in dinkScript.functions:
-				resultLines.append(f"\t{function.name} [UID {function.uid}] ({len(function.stringOffsetToString):,} strings, {len(function.variables):,} variables)")
-				for instructionSegment in function.instructionSegments:
-					resultLines.append(f"\t\tLine {instructionSegment.lineNumber}")
-					for instruction in instructionSegment.getInstructions():
-						resultLines.append(f"\t\t\t{instruction}")
+		for scriptName, script in scripts.items():
+			resultLines.append(str(script))
 		return "\n".join(resultLines)
 
 	@staticmethod
@@ -73,9 +93,9 @@ class DinkParser:
 		# Variables block
 		dinkFunction.variables = DinkParser._parseVariablesBlock(dinkReader, dinkFunction.stringOffsetToString)
 		# Instructions block
-		dinkFunction.instructions = DinkParser._parseInstructionsBlock(dinkReader, dinkFunction)
+		dinkFunction.instructionOperations = DinkParser._parseInstructionsBlock(dinkReader, dinkFunction)
 		# Instruction segments block
-		dinkFunction.instructionSegments = DinkParser._parseInstructionSegmentsBlock(dinkReader, dinkFunction)
+		dinkFunction.instructionLines = DinkParser._parseInstructionSegmentsBlock(dinkReader, dinkFunction)
 
 		# End of the function
 		blockSize, blockEndOffset = DinkParser._getBlockInfo(dinkReader, DinkBlockType.FUNCTION_END)
@@ -92,17 +112,18 @@ class DinkParser:
 		uid = Utils.readString(dinkReader)
 		functionName = Utils.readString(dinkReader)
 		scriptName = Utils.readString(dinkReader)
-		unknownValue1 = Utils.readInt(dinkReader)
-		unknownValue2 = Utils.readInt(dinkReader)
+		unknownByte1 = Utils.readNumericalByte(dinkReader)
+		unknownByte2 = Utils.readNumericalByte(dinkReader)
+		numberOfExtraValues = Utils.readNumericalByte(dinkReader)
+		unknownByte3 = Utils.readNumericalByte(dinkReader)
+		possibleConstantsCount = Utils.readInt(dinkReader)  # TODO: Possibly number of constants in RtMI. Big negative number in Delores though
 
 		if dinkReader.tell() < startOffset + blockSize:
 			excessData = dinkReader.read(startOffset + blockSize - dinkReader.tell())
-			#print(f"Unknown data left in info block: {excessData} [{unknownValue1=}; {unknownValue2=}]")
 
 		if scriptName not in scripts:
 			scripts[scriptName] = DinkScript(scriptName, game)
 		dinkFunction = DinkFunction(scripts[scriptName], uid, functionName)
-		scripts[scriptName].functions.append(dinkFunction)
 		return dinkFunction
 
 	@staticmethod
@@ -113,7 +134,6 @@ class DinkParser:
 		while dinkReader.tell() < blockEndOffset:
 			stringOffset = dinkReader.tell() - stringBlockStartOffset
 			stringOffsetToString[stringOffset] = Utils.readString(dinkReader)
-		###print(f"String block found of size {blockSize} with {len(stringOffsetToString):,} strings: {stringOffsetToString}")
 		return stringOffsetToString
 
 	@staticmethod
@@ -132,26 +152,23 @@ class DinkParser:
 			else:
 				raise DinkError(f"Unknown variable type {variableType} (hex: {hex(variableType)}) in function at block offset {blockEndOffset - blockSize}, {blockSize=}")
 			variableList.append(variableValue)
-		###print(f" {len(variableList):,} variables found: {variableList[:10]}...")
 		return variableList
 
 	@staticmethod
-	def _parseInstructionsBlock(dinkReader: BytesIO, parentFunction: DinkFunction) -> List[DinkInstruction]:
+	def _parseInstructionsBlock(dinkReader: BytesIO, parentFunction: DinkFunction) -> List[DinkInstructionOperation]:
 		blockSize, blockEndOffset = DinkParser._getBlockInfo(dinkReader, DinkBlockType.INSTRUCTIONS_BLOCK_TYPE)
 		instructionList = []
 		while dinkReader.tell() < blockEndOffset:
-			instructionList.append(DinkInstruction(Utils.readInt(dinkReader), parentFunction))
-		##print(f"  {len(instructionList):,} instructions found: {instructionList[:5]}...")
+			instructionList.append(DinkInstructionOperation(Utils.readInt(dinkReader), parentFunction))
 		return instructionList
 
 	@staticmethod
-	def _parseInstructionSegmentsBlock(dinkReader: BytesIO, parentFunction: DinkFunction) -> List[DinkInstructionSegment]:
+	def _parseInstructionSegmentsBlock(dinkReader: BytesIO, parentFunction: DinkFunction) -> List[DinkInstructionLine]:
 		blockSize, blockEndOffset = DinkParser._getBlockInfo(dinkReader, DinkBlockType.INSTRUCTION_SEGMENTS_BLOCK_TYPE)
-		instructionSegments: List[DinkInstructionSegment] = []
+		instructionSegments: List[DinkInstructionLine] = []
 		while dinkReader.tell() < blockEndOffset:
 			lineNumber = Utils.readInt(dinkReader)
 			startIndex = Utils.readInt(dinkReader)
 			endIndex = Utils.readInt(dinkReader)
-			instructionSegments.append(DinkInstructionSegment(parentFunction, lineNumber, startIndex, endIndex))
-		###print(f"  {len(instructionSegments):,} instruction segments found: {instructionSegments[:5]}...")
+			instructionSegments.append(DinkInstructionLine(parentFunction, lineNumber, startIndex, endIndex))
 		return instructionSegments

@@ -8,9 +8,12 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from enums.Game import Game
 from fileparsers import GGPackParser
+from fileparsers.DinkParser import DinkParser
+from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
 from ui import WidgetHelpers
 from ui.widgets.BaseFileEntryDisplayWidget import BaseFileEntryDisplayWidget
+from ui.widgets.DinkDisplayWidget import DinkDisplayWidget
 from ui.widgets.FontDisplayWidget import FontDisplayWidget
 from ui.widgets.ImageDisplayWidget import ImageDisplayWidget
 from ui.widgets.PackedFilesBrowserWidget import PackedFilesBrowserWidget
@@ -132,7 +135,11 @@ class MainWindow(QtWidgets.QMainWindow):
 		if isinstance(dataToShow, str):
 			widgetToShow = TextDisplayWidget(fileEntryToShow, dataToShow)
 		elif isinstance(dataToShow, dict):
-			widgetToShow = TextDisplayWidget(fileEntryToShow, json.dumps(dataToShow, indent=2))
+			firstDictEntry = next(iter(dataToShow.items()))[1]
+			if isinstance(firstDictEntry, DinkScript):
+				widgetToShow = DinkDisplayWidget(fileEntryToShow, dataToShow)
+			else:
+				widgetToShow = TextDisplayWidget(fileEntryToShow, json.dumps(dataToShow, indent=2))
 		elif isinstance(dataToShow, Image):
 			widgetToShow = ImageDisplayWidget(fileEntryToShow, ImageQt.toqpixmap(dataToShow))
 		elif isinstance(dataToShow, List) and isinstance(dataToShow[0], List) and isinstance(dataToShow[0][0], str):
@@ -174,7 +181,11 @@ class MainWindow(QtWidgets.QMainWindow):
 							saveDialogFilterString += '.txt'
 						elif isinstance(fileData, dict):
 							saveDialogFilterString += '.txt'
-							fileData = json.dumps(fileData, indent=2)
+							firstDictEntry = next(iter(fileData.values()))
+							if isinstance(firstDictEntry, DinkScript):
+								fileData = DinkParser.fromDinkScriptDictToStrings(fileData)
+							elif isinstance(firstDictEntry, str):
+								fileData = json.dumps(fileData, indent=2)
 						elif isinstance(fileData, Image):
 							saveDialogFilterString += '.png'
 						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
