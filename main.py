@@ -1,4 +1,4 @@
-import sys
+import multiprocessing, sys
 
 from PySide6.QtWidgets import QApplication
 
@@ -6,6 +6,7 @@ from ui.MainWindow import MainWindow
 
 
 if __name__ == '__main__':
+	multiprocessing.freeze_support()  # This is needed to make multiprocessing work in a PyInstaller EXE
 	gamepath = None
 	filter = None
 	for arg in sys.argv[1:]:

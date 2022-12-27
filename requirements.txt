@@ -2,3 +2,7 @@ Pillow ~= 9.2.0
 pyinstaller ~= 5.5
 PySide6 ~= 6.4.0
 texture2ddecoder ~= 1.0.4
+simpleaudio~=1.0.4
+# For audio, we need PyOgg from its GitHub repo, because its PyPi version is outdated
+git+https://github.com/TeamPyOgg/PyOgg.git#egg=PyOgg
+sfyi-fsb5

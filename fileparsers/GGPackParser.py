@@ -2,12 +2,13 @@
 import io, json, os
 from typing import Dict, List, Tuple, Union
 
+import fsb5
 from PIL import Image
 
 import Keys, Utils
 from CustomExceptions import DecodeError, PackingError
 from enums.Game import Game
-from fileparsers import DinkParser, KtxParser, GGDictParser, YackParser
+from fileparsers import BankParser, DinkParser, KtxParser, GGDictParser, YackParser
 from models.FileEntry import FileEntry
 
 
@@ -87,19 +88,19 @@ def getPackedFile(fileEntry: FileEntry) -> bytes:
 	with open(fileEntry.packFilePath, 'rb') as gameFile:
 		gameFile.seek(fileEntry.offset)
 		encodedFileData = gameFile.read(fileEntry.size)
-	if fileEntry.filename.endswith('.bank'):
+	if fileEntry.fileExtension == '.assets.bank':
 		# sound bank files aren't encoded
 		return encodedFileData
 	else:
 		return decodeGameData(encodedFileData, fileEntry.game)
 
-def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, List, Image.Image, str]:
+def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5, List, Image.Image, str]:
 	fileData = getPackedFile(fileEntry)
 	# All extensions and their counts:
 	# - Thimbleweed Park: .bnut: 187, .byack: 118, .fnt: 32, .json: 421, .lip: 14,294, .nut: 1, .ogg: 17,272, .png: 566, .tsv: 6, .txt: 42, .wav: 644, .wimpy: 163,
 	# - Delores: .bank: 2, .dink: 1, .dinky: 1, .json: 61, .png: 50, .tsv: 9, .ttf: 7, .txt: 2, .wimpy: 22, .yack: 11,
 	# - Return To Monkey Island: .anim: 663, .atlas: 663, .attach: 11, .bank: 7, .blend: 112, .dink: 1, .dinky: 1, .emitter: 157, .json: 292, .ktxbz: 1,152, .lip: 19,610, .otf: 5, .png: 3, .tsv: 20, .ttf: 33, .txt: 31, .wimpy: 159, .yack: 66
-	# TODO Extensions that need implementing: .bnut: 187, .byack: 118, .fnt: 32, .bank: 7, .dink: 1, .nut: 1, .ogg: 17,272, .wav: 644
+	# TODO Extensions that need implementing: .bnut: 187, .byack: 118, .fnt: 32, .bank&.strings.bank: 7, .dink: 1, .nut: 1
 	if fileEntry.fileExtension in ('.atlas', '.blend', '.dinky', '.lip', '.txt'):
 		# Basic text
 		return fileData.decode('utf-8')
@@ -139,6 +140,12 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, List, Ima
 	elif fileEntry.fileExtension in ('.otf', '.ttf'):
 		# Font files, return them as they are
 		return fileData
+	elif fileEntry.fileExtension in ('.ogg', '.wav'):
+		# Sound data, return them as they are
+		return fileData
+	elif fileEntry.fileExtension == '.assets.bank':
+		# Music bank file, no need to convert anything
+		return BankParser.fromBytesToBank(fileData)
 	print(f"Unknown/unsupported file extension '{fileEntry.fileExtension}' for file entry '{fileEntry}'")
 	return fileData
 
@@ -154,7 +161,7 @@ def createPackFile(filenamesToPack: Union[List[str], Tuple[str]], packFilename: 
 			raise PackingError(f"Asked to pack file '{filenameToPack}' but that file doesn't exist")
 		with open(filenameToPack, 'rb') as fileToPack:
 			# .bank files contain music and sounds, and are stored unencoded
-			if filenameToPack.endswith('.bank'):
+			if filenameToPack.endswith('.assets.bank'):
 				encodedDataToPack = fileToPack.read()
 			else:
 				encodedDataToPack = decodeGameData(fileToPack.read(), targetGame)

@@ -22,7 +22,8 @@ class FileEntry:
 	@property
 	def fileExtension(self) -> str:
 		if self._fileExtension is None:
-			self._fileExtension = os.path.splitext(self.filename)[-1]
+			# Split at the first period, so we can distinguish between, for instance, '.strings.bank' and '.assets.bank'
+			self._fileExtension = '.' + self.filename.split('.', 1)[-1]
 		return self._fileExtension
 
 	def __str__(self):

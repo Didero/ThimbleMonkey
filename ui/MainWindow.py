@@ -2,12 +2,13 @@ import json, os, traceback
 from typing import List
 from weakref import WeakValueDictionary
 
+import fsb5
 from PIL import ImageQt
 from PIL.Image import Image
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from enums.Game import Game
-from fileparsers import GGPackParser
+from fileparsers import BankParser, GGPackParser
 from fileparsers.DinkParser import DinkParser
 from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
@@ -17,6 +18,8 @@ from ui.widgets.DinkDisplayWidget import DinkDisplayWidget
 from ui.widgets.FontDisplayWidget import FontDisplayWidget
 from ui.widgets.ImageDisplayWidget import ImageDisplayWidget
 from ui.widgets.PackedFilesBrowserWidget import PackedFilesBrowserWidget
+from ui.widgets.SoundBankDisplayWidget import SoundBankDisplayWidget
+from ui.widgets.SoundDisplayWidget import SoundDisplayWidget
 from ui.widgets.TableDisplayWidget import TableDisplayWidget
 from ui.widgets.TextDisplayWidget import TextDisplayWidget
 
@@ -148,6 +151,10 @@ class MainWindow(QtWidgets.QMainWindow):
 			# These need a bit more parsing, depending on file extension
 			if fileEntryToShow.fileExtension in ('.otf', '.ttf'):
 				widgetToShow = FontDisplayWidget(fileEntryToShow, dataToShow)
+			elif fileEntryToShow.fileExtension in ('.mp3', '.ogg', '.wav'):
+				widgetToShow = SoundDisplayWidget(fileEntryToShow, dataToShow)
+		elif isinstance(dataToShow, fsb5.FSB5):
+			widgetToShow = SoundBankDisplayWidget(fileEntryToShow, dataToShow)
 		if not widgetToShow:
 			raise NotImplementedError(f"Showing file entry '{fileEntryToShow}' has not been implemented yet")
 		newSubWindow = self.centerDisplayArea.addSubWindow(widgetToShow)
@@ -166,7 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			for fileEntry, subWindow in self._displayedFileEntries.items():
 				if subWindow == activeSubWindow:
 					# Some files don't need converting, they can be saved as-is
-					if not shouldConvertData or fileEntry.fileExtension in ('.bank', '.otf', '.png', '.tsv', '.ttf', 'txt'):
+					if not shouldConvertData or fileEntry.fileExtension in ('.otf', '.png', '.tsv', '.ttf', 'txt'):
 						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
 						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)[0]
 						# If the user cancels, the dialog returns None
@@ -188,12 +195,24 @@ class MainWindow(QtWidgets.QMainWindow):
 								fileData = json.dumps(fileData, indent=2)
 						elif isinstance(fileData, Image):
 							saveDialogFilterString += '.png'
-						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
-						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
+						elif isinstance(fileData, fsb5.FSB5):
+							fileData = BankParser.fromBankToBytesDict(fileData)
+						if isinstance(fileData, (bytes, str)):
+							# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
+							savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
+						elif isinstance(fileData, dict):
+							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Load Game Folder", dir=self.gamePath)
+						else:
+							raise ValueError(f"Unsupported file data format '{type(fileData).__name__}'")
 						# If the user cancels, the dialog returns None
 						if savePath:
 							if isinstance(fileData, Image):
 								fileData.save(savePath)
+							elif isinstance(fileData, dict):
+								# A dict is presumed to have filenames as keys and the file data for ach file as values. Save each in the selected folder
+								for filename, filebytes in fileData.items():
+									with open(os.path.join(savePath, filename), 'wb') as saveFile:
+										saveFile.write(filebytes)
 							else:
 								writeMode = 'w' if isinstance(fileData, str) else 'wb'
 								with open(savePath, writeMode, encoding='utf-8') as saveFile:
