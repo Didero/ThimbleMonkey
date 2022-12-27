@@ -44,7 +44,6 @@ def fromGgDict(sourceData: bytes, sourceGame: Game):
 	sourceDataLength = len(sourceData)
 	# Get the start offset of the file index entries
 	offsetsListStart = Utils.parseInt(sourceData, 8) + 1
-	##print(f"{offsetsListStart=:,} ({hex(offsetsListStart)})")
 	if offsetsListStart >= sourceDataLength:
 		raise DecodeError(f"String offsets supposedly start at offset {offsetsListStart:,} but there are only {sourceDataLength:,} bytes available")
 	elif offsetsListStart < 12:

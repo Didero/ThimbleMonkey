@@ -70,7 +70,6 @@ def fromYack(encodedYackBytes: bytes, yackFilename: str) -> List[str]:
 	stringListOffset = Utils.readInt(yackReader)
 	yackReader.seek(stringListOffset)
 	unknownNumber = Utils.readInt(yackReader)
-	##print(f"{unknownNumber=} ({hex(unknownNumber)})")
 	if unknownNumber != _UNKNOWN_NUMBER:
 		raise YackError(f"Unexpected unknown number, should be {_UNKNOWN_NUMBER} but was {unknownNumber}")
 	stringListSize = Utils.readInt(yackReader)
@@ -102,8 +101,6 @@ def fromYack(encodedYackBytes: bytes, yackFilename: str) -> List[str]:
 				parametersAsStrings.append(strings[parameter])
 			else:
 				parametersAsStrings.append(str(parameter))
-		#print(f"{lineNumber}: [{opCodeNumber=} {opCode.name}] {parametersAsStrings}")
-		#print(f"{lineNumber}: [{opCodeNumber=} {opCode.name}] {parametersAsStrings}")
 		joinedParameters = '; '.join(parametersAsStrings)
 		yackLines.append(f"line {lineNumber}: {opCode.name} {joinedParameters}")
 	return yackLines

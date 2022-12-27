@@ -219,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
 									saveFile.write(fileData)
 					return
 			else:
-				print(f"Active subwindow and fileEntry not found in tab list")
+				raise ValueError(f"Active subwindow and fileEntry not found in tab list")
 
 	@QtCore.Slot(FileEntry)
 	def _handleClosedSubwindow(self, fileEntryOfClosedSubwindow: FileEntry):
