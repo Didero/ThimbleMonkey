@@ -17,6 +17,10 @@ There are some guides on the internet on how to do that, but briefly:
 - In the commandprompt or terminal, run the command 'python -m pip venv venv'. This creates the virtual environment
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
+- If you want to be able to play the sounds and music, some further actions are needed. If you don't care about the music, skip to the 'Starting ThimbleMonkey' section
+  - For Windows: Download [this library release](https://github.com/HearthSim/python-fsb5/releases/tag/b7bf605), and place the 'libogg.dll' and 'libvorbis.dll' files from the downloaded zip in the same folder as where you placed ThimbleMonkey
+  - For Mac: Install 'libogg' and 'libvorbis'. If you have Homebrew installed, you can do so with the commands 'brew install libogg' and 'brew install libvorbis'
+  - For Linux: Install 'libogg' and 'libvorbis' with the command 'sudo apt-get install libogg libvorbis'
 - Now you're done with the setup! Move on to 'Starting ThimbleMonkey'
 #### Updating
 (**Note**: If you're on MacOS, use 'python3' instead of 'python' for these steps)
