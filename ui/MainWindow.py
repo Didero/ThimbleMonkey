@@ -197,13 +197,14 @@ class MainWindow(QtWidgets.QMainWindow):
 							saveDialogFilterString += '.png'
 						elif isinstance(fileData, fsb5.FSB5):
 							fileData = BankParser.fromBankToBytesDict(fileData)
-						if isinstance(fileData, (bytes, str)):
-							# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
-							savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
-						elif isinstance(fileData, dict):
-							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Load Game Folder", dir=self.gamePath)
 						else:
 							raise ValueError(f"Unsupported file data format '{type(fileData).__name__}'")
+
+						if isinstance(fileData, dict):
+							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Load Game Folder", dir=self.gamePath)
+						else:
+							# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
+							savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
 						# If the user cancels, the dialog returns None
 						if savePath:
 							if isinstance(fileData, Image):
