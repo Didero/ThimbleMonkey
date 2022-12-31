@@ -14,7 +14,7 @@ There are some guides on the internet on how to do that, but briefly:
 - Make sure you have Python installed. Try opening a commandprompt or terminal, and typing 'python --version'. You should get a version number. If you get an error, install Python 3
 - Download this project from its GitHub page by clicking the green 'Code' button and selecting 'Download ZIP'. Or use a GIT client to check out the repository
 - Extract the download ZIP somewhere, and open a commandprompt or terminal there
-- In the commandprompt or terminal, run the command 'python -m pip venv venv'. This creates the virtual environment
+- In the commandprompt or terminal, run the command 'python -m venv venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
 - If you want to be able to play the sounds and music, some further actions are needed. If you don't care about the music, skip to the 'Starting ThimbleMonkey' section
