@@ -14,7 +14,7 @@ There are some guides on the internet on how to do that, but briefly:
 - Make sure you have Python installed. Try opening a commandprompt or terminal, and typing 'python --version'. You should get a version number. If you get an error, install Python 3
 - Download this project from its GitHub page by clicking the green 'Code' button and selecting 'Download ZIP'. Or use a GIT client to check out the repository
 - Extract the download ZIP somewhere, and open a commandprompt or terminal there
-- On Linux and possibly MacOS, some extra Python modules are needed (if you're not sure, try the next step, and if it gives errors, return to this step and then try again):
+- On Linux, some extra Python modules are needed (if you're not sure, try the next step, and if it gives errors, return to this step and then try again):
   - Run the command 'sudo apt install python3-pip' and answer 'Y' when it asks you if you're sure you want to install.
   - Now we need to know which Python version is installed, so run 'python --version', and remember the output (for instance 'Python 3.10.6')
   - Run the command 'sudo apt install [python version]-venv', replacing '[python-version]' with the version you found in the previous step (for instance 'sudo apt install python3.10-venv'), again answering 'Y' when it asks if you're sure
