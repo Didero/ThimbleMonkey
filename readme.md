@@ -20,7 +20,7 @@ There are some guides on the internet on how to do that, but briefly:
   - Run the command 'sudo apt install [python version]-venv', replacing '[python-version]' with the version you found in the previous step (for instance 'sudo apt install python3.10-venv'), again answering 'Y' when it asks if you're sure
   - Run the command 'sudo apt install git', again answering 'Y' if it asks for confirmation. We need git because one of the needed libraries comes from a git source
   - For sound playback support, we need some header files. Run the command 'sudo apt install libasound2-dev'
-- In the commandprompt or terminal, run the command 'python -m venv venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
+- In the commandprompt or terminal, run the command 'python -m venv --system-site-packages venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
 - If you want to be able to play the sounds and music, some further actions are needed. If you don't care about the music, skip to the 'Starting ThimbleMonkey' section
