@@ -29,13 +29,13 @@ There are some guides on the internet on how to do that, but briefly:
   - For Linux: Install 'libogg' and 'libvorbis' with the command 'sudo apt-get install libogg libvorbis'
 - Now you're done with the setup! Move on to 'Starting ThimbleMonkey'
 #### Updating
-(**Note**: If you're on MacOS, use 'python3' instead of 'python' for these steps)
+(**Note**: On MacOS and some Linux flavors, use 'python3' instead of 'python' for these steps)
 - Download the code the same way as in the 'Initial Setup' section, overwriting the existing code
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Since the updated code might have new or updated libraries, we need to install those, with the command 'python -m pip install --upgrade -r requirements.txt'
 - Update done! Now you can start ThimbleMonkey as described in 'Starting ThimbleMonkey' below
 #### Starting ThimbleMonkey
-(**Note**: If you're on MacOS, use 'python3' instead of 'python' for these steps)
+(**Note**: On MacOS and some Linux flavors, use 'python3' instead of 'python' for these steps)
 - Open a commandprompt or terminal, and navigate to where you extracted ThimbleMonkey
 - If you didn't just do the initial setup listed above, activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m main.py' or 'python -m main'
