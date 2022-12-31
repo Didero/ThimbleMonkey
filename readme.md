@@ -38,7 +38,7 @@ There are some guides on the internet on how to do that, but briefly:
 (**Note**: If you're on MacOS, use 'python3' instead of 'python' for these steps)
 - Open a commandprompt or terminal, and navigate to where you extracted ThimbleMonkey
 - If you didn't just do the initial setup listed above, activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
-- Run the command 'python -m main.py'
+- Run the command 'python -m main.py' or 'python -m main'
 - ThimbleMonkey should start now
 
 ## Using ThimbleMonkey
