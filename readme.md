@@ -10,10 +10,16 @@ Just double-click the executable. Easy!
 #### Initial setup
 This project needs some libraries, so you probably want to set up a virtual environment first, to keep these libraries out of your main Python install.
 There are some guides on the internet on how to do that, but briefly:  
-(**Note**: On MacOS, use 'python3' instead of 'python' for these steps)
+(**Note**: On MacOS and some Linux flavors, use 'python3' instead of 'python' for these steps)
 - Make sure you have Python installed. Try opening a commandprompt or terminal, and typing 'python --version'. You should get a version number. If you get an error, install Python 3
 - Download this project from its GitHub page by clicking the green 'Code' button and selecting 'Download ZIP'. Or use a GIT client to check out the repository
 - Extract the download ZIP somewhere, and open a commandprompt or terminal there
+- On Linux and possibly MacOS, some extra Python modules are needed (if you're not sure, try the next step, and if it gives errors, return to this step and then try again):
+  - Run the command 'sudo apt install python3-pip' and answer 'Y' when it asks you if you're sure you want to install.
+  - Now we need to know which Python version is installed, so run 'python --version', and remember the output (for instance 'Python 3.10.6')
+  - Run the command 'sudo apt install [python version]-venv', replacing '[python-version]' with the version you found in the previous step (for instance 'sudo apt install python3.10-venv'), again answering 'Y' when it asks if you're sure
+  - Run the command 'sudo apt install git', again answering 'Y' if it asks for confirmation. We need git because one of the needed libraries comes from a git source
+  - For sound playback support, we need some header files. Run the command 'sudo apt install libasound2-dev'
 - In the commandprompt or terminal, run the command 'python -m venv venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
