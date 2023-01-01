@@ -23,7 +23,7 @@ There are some guides on the internet on how to do that, but briefly:
     - Run the command 'sudo apt install git', again answering 'Y' if it asks for confirmation. We need git because one of the needed libraries comes from a git source
     - For sound playback support, we need some header files. Run the command 'sudo apt install libasound2-dev'
   - For MacOS:
-    - Install Homebrew if it's not installed already. See (its homepage)[https://brew.sh] for how to do that
+    - Install Homebrew if it's not installed already. See [its homepage](https://brew.sh) for how to do that
     - Run the command 'brew install libogg'
     - Run the command 'brew install libvorbis'
 - In the commandprompt or terminal, run the command 'python -m venv --system-site-packages venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
