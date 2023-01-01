@@ -26,7 +26,7 @@ There are some guides on the internet on how to do that, but briefly:
     - Install Homebrew if it's not installed already. See [its homepage](https://brew.sh) for how to do that
     - Run the command 'brew install libogg'
     - Run the command 'brew install libvorbis'
-- In the commandprompt or terminal, run the command 'python -m venv --system-site-packages venv'. This creates the virtual environment (If you get an error that 'pip' can't be found, run 'sudo apt-get install python-pip' or 'sudo apt-get install python3-pip' first)
+- In the commandprompt or terminal, run the command 'python -m venv --system-site-packages venv'. This creates the virtual environment
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
 - Now you're done with the setup! Move on to 'Starting ThimbleMonkey'
