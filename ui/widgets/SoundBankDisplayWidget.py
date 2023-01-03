@@ -47,8 +47,14 @@ class SoundBankDisplayWidget(BaseFileEntryDisplayWidget):
 	def _onSampleSelected(self, itemToLoad: QtWidgets.QTreeWidgetItem, clickedColumnIndex: int):
 		sampleIndexToLoad = itemToLoad.data(0, int(QtCore.Qt.ItemDataRole.UserRole))
 		sampleToLoad = self._soundbank.samples[sampleIndexToLoad]
-		parsedSample = bytes(self._soundbank.rebuild_sample(sampleToLoad))
-		self._soundPanel.setAudioData(parsedSample, '.ogg', True, sampleToLoad.name)
+		try:
+			parsedSample = bytes(self._soundbank.rebuild_sample(sampleToLoad))
+		except Exception as e:
+			traceback.print_exc()
+			WidgetHelpers.showErrorMessage("Error while loading sound",
+										   f"Something went wrong when trying to play the selected sound.\nThat could mean a problem with loading the Ogg Vorbis libraries.\n\nThe exact error is: {e}")
+		else:
+			self._soundPanel.setAudioData(parsedSample, '.ogg', True, sampleToLoad.name)
 
 	@staticmethod
 	def _getDuration(bufferLength: int, channelCount: int, bytesPerSample: int, frequency: float) -> int:
