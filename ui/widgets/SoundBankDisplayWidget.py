@@ -1,8 +1,11 @@
+import traceback
+
 import fsb5
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from fileparsers import BankParser
 from models.FileEntry import FileEntry
+from ui import WidgetHelpers
 from ui.widgets.BaseFileEntryDisplayWidget import BaseFileEntryDisplayWidget
 from ui.widgets.SimpleSoundPanel import SimpleSoundPanel
 
