@@ -51,7 +51,7 @@ class SoundBankDisplayWidget(BaseFileEntryDisplayWidget):
 		sampleIndexToLoad = itemToLoad.data(0, int(QtCore.Qt.ItemDataRole.UserRole))
 		sampleToLoad = self._soundbank.samples[sampleIndexToLoad]
 		try:
-			parsedSample = bytes(self._soundbank.rebuild_sample(sampleToLoad))
+			parsedSample = BankParser.rebuildSample(sampleToLoad)
 		except Exception as e:
 			traceback.print_exc()
 			WidgetHelpers.showErrorMessage("Error while loading sound",
