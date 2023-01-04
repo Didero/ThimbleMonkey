@@ -54,7 +54,6 @@ def __decodeSection(sectionToDecode: bytes, startIndex: int) -> Tuple[int, bytea
 
 def fromBytesToBank(sourceData: bytes, shouldDecodeData: bool = True) -> fsb5.FSB5:
     """Converts the BANK music and sound data into something useful"""
-    startTime = time.perf_counter()
     if shouldDecodeData:
         decodedSourceData = _decode(sourceData)
     else:
