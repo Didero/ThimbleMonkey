@@ -49,7 +49,7 @@ There are some guides on the internet on how to do that, but briefly:
 ## Using ThimbleMonkey
 ### Loading game files
 - Click 'File' and select 'Load game folder...'. This opens up a file browser
-- Navigate to where your Return To Monkey Island game files are. You can find this location by opening Steam, right-clicking one of the supported games, and selecting 'Manage' and then 'Browse Local Files'. No files show up in the file browser, because you're selecting a whole folder. (Note that for Thimbleweed Park, you need to select the 'Resources' subfolder)
+- Navigate to where your Thimbleweed Park, Delores, and/or Return To Monkey Island game files are. You can find this location by opening Steam, right-clicking one of the supported games, and selecting 'Manage' and then 'Browse Local Files'. No files show up in the file browser, because you're selecting a whole folder. (Note that for Thimbleweed Park, you need to select the 'Resources' subfolder)
 - Click 'Select folder'. This makes ThimbleMonkey load all the ggpack files from the game folder. This could take a little while
 - The list on the left should have filled with a lot of filenames now. Double-click one to see the file contents on the right
 - Some interesting file types: '.ktxbz' file are images, '.otf' and '.ttf' files are fonts, '.yack' files are conversation script files, and '.assets.bank' files contain sounds and music. But I'm sure every file has something interesting in it
