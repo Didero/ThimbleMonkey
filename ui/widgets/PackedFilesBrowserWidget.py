@@ -10,6 +10,9 @@ from ui import WidgetHelpers
 
 class PackedFilesBrowserWidget(QtWidgets.QWidget):
 	loadFileSignal = QtCore.Signal(FileEntry)
+	_COLUMN_DATA_USER_ROLE: int = int(QtCore.Qt.ItemDataRole.UserRole)
+	_LOWERCASE_NAME_COLUMN_INDEX: int = 0
+	_FILE_ENTRY_COLUMN_INDEX: int = 1
 
 	def __init__(self):
 		super().__init__()
@@ -59,8 +62,10 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 				treeItem.setText(0, packedFileEntry.filename)
 				treeItem.setText(1, os.path.basename(packedFileEntry.packFilePath))
 				treeItem.setText(2, f"{packedFileEntry.size:,}")
-				# Put the actual file entry hidden in column 0, so we can retrieve it when an treeItem is clicked
-				treeItem.setData(0, int(QtCore.Qt.ItemDataRole.UserRole), packedFileEntry)
+				# Put a lowercase name hidden in a column, for case-insensitive filtering
+				treeItem.setData(self._LOWERCASE_NAME_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE, packedFileEntry.filename.lower())
+				# Put the actual file entry hidden a column, so we can retrieve it when an treeItem is clicked
+				treeItem.setData(self._FILE_ENTRY_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE, packedFileEntry)
 				self._fileBrowser.addTopLevelItem(treeItem)
 			# Update the column widths
 			for i in range(0, self._fileBrowser.columnCount()):
@@ -89,7 +94,7 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 
 	@QtCore.Slot(QtWidgets.QTreeWidgetItem, int)
 	def _emitLoadFileEvent(self, itemToLoad: QtWidgets.QTreeWidgetItem, clickedColumnIndex: int):
-		fileEntryToLoad = itemToLoad.data(0, int(QtCore.Qt.ItemDataRole.UserRole))
+		fileEntryToLoad = itemToLoad.data(self._FILE_ENTRY_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE)
 		self.loadFileSignal.emit(fileEntryToLoad)
 
 	@QtCore.Slot()
@@ -102,12 +107,13 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		if not filterText:
 			self._clearFileBrowserFilter()
 			return
+		filterText = filterText.lower()
 		# If no special filtering is applied, make sure partial matches also count ('anim' matches all the '.anim' files, for instance)
 		if '*' not in filterText and '?' not in filterText:
 			filterText = f"*{filterText}*"
 		for treeItemIndex in range(self._fileBrowser.topLevelItemCount()):
 			treeItem = self._fileBrowser.topLevelItem(treeItemIndex)
-			treeItem.setHidden(not fnmatch(treeItem.text(0), filterText))
+			treeItem.setHidden(not fnmatch(treeItem.data(self._LOWERCASE_NAME_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE), filterText))
 		# Update the status text
 		self._updateFileCountLabel()
 
