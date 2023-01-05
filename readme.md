@@ -5,6 +5,7 @@ This project is based very much on the work done over at [Dinky Explorer](https:
 ## How to run
 ### From release
 Just double-click the executable. Easy!
+On the ARM version of MacOS (So M1, M2, and so on) you may have to run ThimbleMonkey through Rosetta. Select ThimbleMonkey in Finder, then open its Info screen by either pressing command + I, selecting 'File' and then 'Get Info', or right-clicking ThimbleMonkey and selecting 'Get Info'. Then check 'Open using Rosetta', close the Info window, and run ThimbleMonkey.
 
 ### From Python scripts
 #### Initial setup
