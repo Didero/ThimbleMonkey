@@ -28,12 +28,14 @@ There are some guides on the internet on how to do that, but briefly:
     - Run the command 'brew install libvorbis'
 - In the commandprompt or terminal, run the command 'python -m venv --system-site-packages venv'. This creates the virtual environment
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
+- Run the command 'python -m pip install --upgrade pip' to make sure the latest pip version is used
 - Run the command 'python -m pip install -r requirements.txt' to install the required libraries in your new virtual environment
 - Now you're done with the setup! Move on to 'Starting ThimbleMonkey'
 #### Updating
 (**Note**: On MacOS and some Linux flavors, use 'python3' instead of 'python' for these steps)
 - Download the code the same way as in the 'Initial Setup' section, overwriting the existing code
 - Activate the virtual environment by typing 'venv\Scripts\activate' on Windows or 'source venv/bin/activate' on Linux and MacOS
+- Run the command 'python -m pip install --upgrade pip' to make sure the latest pip version is used
 - Since the updated code might have new or updated libraries, we need to install those, with the command 'python -m pip install --upgrade -r requirements.txt'
 - Update done! Now you can start ThimbleMonkey as described in 'Starting ThimbleMonkey' below
 #### Starting ThimbleMonkey
