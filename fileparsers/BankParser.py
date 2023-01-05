@@ -1,7 +1,7 @@
 # Parses the .assets.bank files, which contain RIFF data, and the Fmod FSB section encoded in an SND chunk
 # Based on https://github.com/bgbennyboy/Dinky-Explorer/blob/master/ThimbleweedLibrary/FMODBankExtractor.cs and https://github.com/SamboyCoding/Fmod5Sharp
 
-import ctypes, multiprocessing, time
+import ctypes, multiprocessing, platform, time
 from io import BytesIO
 from typing import Dict, Tuple
 
@@ -71,7 +71,11 @@ def fromBankToBytesDict(soundbank: fsb5.FSB5) -> Dict[str, bytes]:
         sounds[sample.name + '.ogg'] = rebuildSample(soundbank, sample)
     return sounds
 
-def rebuildSample(sample: fsb5.Sample) -> bytes:
+def rebuildSample(soundbank: fsb5.FSB5, sample: fsb5.Sample) -> bytes:
+    """Create an OGG file from the provided FSB5 sample"""
+    if platform.system() == 'Windows':
+        return bytes(soundbank.rebuild_sample(sample))
+    # Copied from the FSB5 library and adjusted to use PyOgg
     crc32 = sample.metadata[11].crc32
     try:
         setup_packet_buff = fsb5.vorbis_headers.lookup[crc32]
