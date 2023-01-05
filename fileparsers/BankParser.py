@@ -68,7 +68,7 @@ def fromBankToBytesDict(soundbank: fsb5.FSB5) -> Dict[str, bytes]:
     """Converts the BANK sound data into a dict with filenames as the keys and the sounddata as values"""
     sounds = {}
     for sample in soundbank.samples:
-        sounds[sample.name + '.ogg'] = bytes(soundbank.rebuild_sample(sample))
+        sounds[sample.name + '.ogg'] = rebuildSample(soundbank, sample)
     return sounds
 
 def rebuildSample(sample: fsb5.Sample) -> bytes:
