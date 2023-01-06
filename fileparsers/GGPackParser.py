@@ -121,8 +121,10 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 		# Dink script, return it parsed
 		return DinkParser.DinkParser.fromDinkToScripts(fileData, fileEntry.game)
 	elif fileEntry.fileExtension == '.yack':
-		# Yack script, return it parsed
-		return "\n\n".join(YackParser.fromYack(fileData, fileEntry.filename))
+		# Yack script. RtMI needs decoding, Delores has it as plain text. Not used in Thimbleweed Park
+		if fileEntry.game == Game.RETURN_TO_MONKEY_ISLAND:
+			return "\n\n".join(YackParser.fromYack(fileData, fileEntry.filename))
+		return fileData.decode('utf-8')
 	elif fileEntry.fileExtension in ('.ktx', '.ktxbz'):
 		# Compressed image, return it as a Pillow image
 		return KtxParser.fromKtx(fileData, fileEntry.filename, 1)[0]
