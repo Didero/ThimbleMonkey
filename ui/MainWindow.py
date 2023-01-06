@@ -156,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		elif isinstance(dataToShow, fsb5.FSB5):
 			widgetToShow = SoundBankDisplayWidget(fileEntryToShow, dataToShow)
 		if not widgetToShow:
-			raise NotImplementedError(f"Showing file entry '{fileEntryToShow}' has not been implemented yet")
+			raise NotImplementedError(f"Showing files with extension '{fileEntryToShow.fileExtension}' has not been implemented yet")
 		newSubWindow = self.centerDisplayArea.addSubWindow(widgetToShow)
 		newSubWindow.setWindowTitle(fileEntryToShow.filename)
 		self._displayedFileEntries[fileEntryToShow] = newSubWindow
