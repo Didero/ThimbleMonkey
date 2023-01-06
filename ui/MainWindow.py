@@ -100,22 +100,37 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def setGamePath(self, gamePath: str):
 		packedFileEntries: List[FileEntry] = []
-		for fn in os.listdir(gamePath):
-			gameFilePath = os.path.join(gamePath, fn)
-			if '.ggpack' not in fn or os.path.isdir(gameFilePath):
-				continue
+		for packFilePath in self._getPackFilesInFolder(gamePath):
 			try:
-				fileIndex = GGPackParser.getFileIndex(gameFilePath)
-				game = Game.ggpackPathToGameName(fn)
+				fileIndex = GGPackParser.getFileIndex(packFilePath)
+				game = Game.ggpackPathToGameName(packFilePath)
 				for fileEntryData in fileIndex['files']:
-					fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], gameFilePath, game)
+					fileEntry = FileEntry(fileEntryData['filename'], fileEntryData['offset'], fileEntryData['size'], packFilePath, game)
 					packedFileEntries.append(fileEntry)
 			except Exception as e:
 				traceback.print_exc()
-				WidgetHelpers.showErrorMessage("Error Opening GGPack", f"An error occurred while trying to load '{gameFilePath}':\n\n{e}", self)
+				WidgetHelpers.showErrorMessage("Error Opening GGPack", f"An error occurred while trying to load '{packFilePath}':\n\n{e}")
 		self.gamePath = gamePath
 		self.updateWindowTitle(gamePath)
 		self.packedFileBrowser.showFilesInFileBrowser(packedFileEntries)
+
+	def _getPackFilesInFolder(self, pathToCheck: str) -> List[str]:
+		if not os.path.exists(pathToCheck):
+			print(f"Provided path to check for ggpack files '{pathToCheck}' does not exist")
+			return []
+		packPaths: List[str] = []
+		for fn in os.listdir(pathToCheck):
+			gameFilePath = os.path.join(pathToCheck, fn)
+			if os.path.isdir(gameFilePath):
+				if fn == 'Resources':
+					# Thimbleweed Park stores its ggpacks in the 'Resources' subfolder
+					packPaths.extend(self._getPackFilesInFolder(gameFilePath))
+				elif fn.endswith('.app'):
+					# MacOS stores its games inside an .app executable folder, find the ggpacks inside there
+					packPaths.extend(self._getPackFilesInFolder(os.path.join(gameFilePath, 'Contents', 'Resources')))
+			elif '.ggpack' in fn:
+				packPaths.append(gameFilePath)
+		return packPaths
 
 	@QtCore.Slot(FileEntry)
 	def loadFileFromFileBrowser(self, fileEntryToLoad: FileEntry):
