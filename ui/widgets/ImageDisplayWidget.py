@@ -13,6 +13,9 @@ class ImageDisplayWidget(QtWidgets.QGraphicsView, BaseFileEntryDisplayWidget):
 		self.setBackgroundBrush(self._BACKGROUND_BRUSH)
 		self._scene = QtWidgets.QGraphicsScene(self)
 		self.setScene(self._scene)
+		self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+		self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
 		self._baseImage = image
 		self._imageItem: QtWidgets.QGraphicsPixmapItem = self._scene.addPixmap(self._baseImage)
 		self._fitImageIfTooLarge()
@@ -23,5 +26,5 @@ class ImageDisplayWidget(QtWidgets.QGraphicsView, BaseFileEntryDisplayWidget):
 
 	def _fitImageIfTooLarge(self):
 		# Only shrink the image if it's too large, don't enlarge it if it's too small
-		if self._baseImage.width() > self.width() or self._baseImage.height() > self.height():
+		if self._baseImage.width() > self.contentsRect().width() or self._baseImage.height() > self.contentsRect().height():
 			self.fitInView(self._imageItem, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
