@@ -12,13 +12,13 @@ class ImageDisplayWidget(QtWidgets.QGraphicsView, BaseFileEntryDisplayWidget):
 		self._fileEntry = fileEntry
 		self.setBackgroundBrush(self._BACKGROUND_BRUSH)
 		self._scene = QtWidgets.QGraphicsScene(self)
-		self.setScene(self._scene)
 		self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 		self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
 		self._baseImage = image
 		self._imageItem: QtWidgets.QGraphicsPixmapItem = self._scene.addPixmap(self._baseImage)
 		self._fitImageIfTooLarge()
+		self.setScene(self._scene)
 
 	def resizeEvent(self, event: QtGui.QResizeEvent) -> None:
 		super().resizeEvent(event)
