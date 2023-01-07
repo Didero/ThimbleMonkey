@@ -5,10 +5,12 @@ from ui.widgets.BaseFileEntryDisplayWidget import BaseFileEntryDisplayWidget
 
 
 class ImageDisplayWidget(QtWidgets.QGraphicsView, BaseFileEntryDisplayWidget):
+	_BACKGROUND_BRUSH = QtGui.QBrush(QtCore.Qt.darkGray)
+
 	def __init__(self, fileEntry: FileEntry, image: QtGui.QPixmap):
 		super().__init__()
 		self._fileEntry = fileEntry
-		self.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.darkGray))
+		self.setBackgroundBrush(self._BACKGROUND_BRUSH)
 		self._scene = QtWidgets.QGraphicsScene(self)
 		self.setScene(self._scene)
 		self._baseImage = image
