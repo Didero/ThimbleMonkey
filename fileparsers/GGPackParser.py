@@ -8,7 +8,7 @@ from PIL import Image
 import Keys, Utils
 from CustomExceptions import DecodeError, PackingError
 from enums.Game import Game
-from fileparsers import BankParser, DinkParser, KtxParser, GGDictParser, YackParser
+from fileparsers import BankParser, DinkParser, GGDictParser, KtxParser, NutParser, YackParser
 from models.FileEntry import FileEntry
 
 
@@ -120,6 +120,8 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 	elif fileEntry.fileExtension == '.dink':
 		# Dink script, return it parsed
 		return DinkParser.DinkParser.fromDinkToScripts(fileData, fileEntry.game)
+	elif fileEntry.fileExtension == '.bnut':
+		return NutParser.fromBytes(fileData)
 	elif fileEntry.fileExtension == '.yack':
 		# Yack script. RtMI needs decoding, Delores has it as plain text. Not used in Thimbleweed Park
 		if fileEntry.game == Game.RETURN_TO_MONKEY_ISLAND:
