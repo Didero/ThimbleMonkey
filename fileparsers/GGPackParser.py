@@ -100,8 +100,8 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 	# - Thimbleweed Park: .bnut: 187, .byack: 118, .fnt: 32, .json: 421, .lip: 14,294, .nut: 1, .ogg: 17,272, .png: 566, .tsv: 6, .txt: 42, .wav: 644, .wimpy: 163,
 	# - Delores: .bank: 2, .dink: 1, .dinky: 1, .json: 61, .png: 50, .tsv: 9, .ttf: 7, .txt: 2, .wimpy: 22, .yack: 11,
 	# - Return To Monkey Island: .anim: 663, .atlas: 663, .attach: 11, .bank: 7, .blend: 112, .dink: 1, .dinky: 1, .emitter: 157, .json: 292, .ktxbz: 1,152, .lip: 19,610, .otf: 5, .png: 3, .tsv: 20, .ttf: 33, .txt: 31, .wimpy: 159, .yack: 66
-	# TODO Extensions that need implementing: .bnut: 187, .byack: 118, .fnt: 32, .bank&.strings.bank: 7, .dink: 1
-	if fileEntry.fileExtension in ('.atlas', '.blend', '.dinky', '.lip', '.nut', '.txt'):
+	# TODO Extensions that need implementing: .bank&.strings.bank: 7, .dink: 1
+	if fileEntry.fileExtension in ('.atlas', '.blend', '.byack', '.dinky', '.fnt', '.lip', '.nut', '.txt'):
 		# Basic text
 		return fileData.decode('utf-8')
 	elif fileEntry.fileExtension in ('.anim', '.attach'):
