@@ -108,9 +108,8 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 			self._clearFileBrowserFilter()
 			return
 		filterText = filterText.lower()
-		# If no special filtering is applied, make sure partial matches also count ('anim' matches all the '.anim' files, for instance)
-		if '*' not in filterText and '?' not in filterText:
-			filterText = f"*{filterText}*"
+		# Make sure we always get partial matches ('.?tf' should get all .otf and .ttf files, instead of having to add * to the front and back every time)
+		filterText = f"*{filterText}*"
 		for treeItemIndex in range(self._fileBrowser.topLevelItemCount()):
 			treeItem = self._fileBrowser.topLevelItem(treeItemIndex)
 			treeItem.setHidden(not fnmatch(treeItem.data(self._LOWERCASE_NAME_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE), filterText))
