@@ -188,7 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			for fileEntry, subWindow in self._displayedFileEntries.items():
 				if subWindow == activeSubWindow:
 					# Some files don't need converting, they can be saved as-is
-					if not shouldConvertData or fileEntry.fileExtension in ('.otf', '.png', '.tsv', '.ttf', '.txt'):
+					if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
 						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
 						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)[0]
 						# If the user cancels, the dialog returns None
