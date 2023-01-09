@@ -216,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
 							raise ValueError(f"Unsupported file data format '{type(fileData).__name__}'")
 
 						if isinstance(fileData, dict):
-							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Load Game Folder", dir=self.gamePath)
+							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Save Files To Folder", dir=self.gamePath)
 						else:
 							# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
 							savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
