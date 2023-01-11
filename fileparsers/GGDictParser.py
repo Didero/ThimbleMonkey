@@ -24,7 +24,7 @@ class _ValueType(Enum):
 	VECTOR2DTRIPLET = b'\x0B'
 
 
-_HEADER = b'\x01\x02\x03\x04'
+HEADER = b'\x01\x02\x03\x04'
 _VERSION_HEADER = b'\x01\x00\x00\x00'
 _FILE_INDEX_END = b'\xFF\xFF\xFF\xFF'
 _STRING_OFFSETS_START = b'\x07'
@@ -39,8 +39,8 @@ def fromGgDict(sourceData: bytes, sourceGame: Game):
 	:return: The parsed structure, usually a dictionary
 	"""
 	# Verify the header to see if the source data is parsable
-	if sourceData[0:4] != _HEADER or sourceData[4:8] != _VERSION_HEADER:
-		raise DecodeError(f"Invalid header. Should be '{Utils.getPrintableBytes(_HEADER)} {Utils.getPrintableBytes(_VERSION_HEADER)}, but is {Utils.getPrintableBytes(sourceData[0:8])}")
+	if sourceData[0:4] != HEADER or sourceData[4:8] != _VERSION_HEADER:
+		raise DecodeError(f"Invalid header. Should be '{Utils.getPrintableBytes(HEADER)} {Utils.getPrintableBytes(_VERSION_HEADER)}, but is {Utils.getPrintableBytes(sourceData[0:8])}")
 	sourceDataLength = len(sourceData)
 	# Get the start offset of the file index entries
 	offsetsListStart = Utils.parseInt(sourceData, 8) + 1
@@ -136,9 +136,9 @@ def toGgDict(valueToConvert, targetGame: Game) -> bytes:
 	ggdictOutput = bytearray()
 	_writeValue(ggdictOutput, stringList, targetGame == Game.RETURN_TO_MONKEY_ISLAND, valueToConvert)
 	# Now we can create the string offsets and strings (The +4 is for the int indicating the offset where the string offsets list starts)
-	stringIndexOffset = len(_HEADER) + len(_VERSION_HEADER) + 4 + len(ggdictOutput)
+	stringIndexOffset = len(HEADER) + len(_VERSION_HEADER) + 4 + len(ggdictOutput)
 	output = bytearray()
-	output.extend(_HEADER)
+	output.extend(HEADER)
 	output.extend(_VERSION_HEADER)
 	output.extend(Utils.toWritableInt(stringIndexOffset))
 	output.extend(ggdictOutput)
