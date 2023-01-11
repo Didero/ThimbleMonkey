@@ -112,7 +112,7 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 		if fileData.startswith(GGDictParser.HEADER):
 			return GGDictParser.fromGgDict(fileData, fileEntry.game)
 		elif fileData[0] == 0x7B:  # 0x7B is the ASCII code for '{', which a plain JSON file starts with
-			return json.loads(fileData)
+			return json.loads(fileData.rstrip(b'\x07'))  # Some Thimbleweed Park JSONs end with an extra \x07 byte, remove it before parsing
 		else:
 			return fileData.decode('utf-8')
 	elif fileEntry.fileExtension == '.dink':
