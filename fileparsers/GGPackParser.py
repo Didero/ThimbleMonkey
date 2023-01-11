@@ -107,19 +107,14 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 	elif fileEntry.fileExtension == '.anim':
 		# Text formatted as JSON, return a dict
 		return json.loads(fileData)
-	elif fileEntry.fileExtension in ('.emitter', '.wimpy'):
-		# A GGDict in RtMI, plaintext in Delores, parse it to a dict and return that
-		if fileEntry.game == Game.RETURN_TO_MONKEY_ISLAND:
+	elif fileEntry.fileExtension in ('.emitter', '.json', '.wimpy'):
+		# These files can be either GGDict, JSON, or plain text
+		if fileData.startswith(GGDictParser.HEADER):
 			return GGDictParser.fromGgDict(fileData, fileEntry.game)
-		else:
-			return fileData.decode('utf-8')
-	elif fileEntry.fileExtension == '.json':
-		# This can either be an actual JSON file, or a GGDict. Determine which it is
-		if fileData[0] == 0x7B:  # 0x7B is the ASCII code for '{', which a plain JSON file starts with
-			# Normal JSON file
+		elif fileData[0] == 0x7B:  # 0x7B is the ASCII code for '{', which a plain JSON file starts with
 			return json.loads(fileData)
 		else:
-			return GGDictParser.fromGgDict(fileData, fileEntry.game)
+			return fileData.decode('utf-8')
 	elif fileEntry.fileExtension == '.dink':
 		# Dink script, return it parsed
 		return DinkParser.DinkParser.fromDinkToScripts(fileData, fileEntry.game)
