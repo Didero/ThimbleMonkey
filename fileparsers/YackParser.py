@@ -22,6 +22,8 @@ class _YackOpCodes(IntEnum):
 	GOTO_LABEL = 10  # GOTO_LABEL can also have an extra parameter, in which case it probably acts like GOTO_IF (See line 71 of Carla.yack, or lines 43-46 of BarPirates.yack, for instance)
 	END_CHOICES = 11
 	BEGIN_CHOICES = 12
+	# TODO code 15 (0xF) at lines 229 and 244 of OpenSafe.yack, and line 591 of New LeadersMonkeyHead.yack
+	# TODO code 16 (0x10) at line 90 of New LeadersMonkeyHead.yack
 	# TODO: Encountered unknown Yack op code 17 (0x11) at line number 20 of file HintSystemAct1.yack
 	GOTO_IF = 19
 	DIALOG_CHOICE_1 = 100
