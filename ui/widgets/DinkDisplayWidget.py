@@ -2,7 +2,6 @@ from typing import Dict, List
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from fileparsers.DinkParser import DinkParser
 from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
 from ui.widgets.BaseFileEntryDisplayWidget import BaseFileEntryDisplayWidget

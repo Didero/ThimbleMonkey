@@ -117,7 +117,7 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 			return fileData.decode('utf-8')
 	elif fileEntry.fileExtension == '.dink':
 		# Dink script, return it parsed
-		return DinkParser.DinkParser.fromDinkToScripts(fileData, fileEntry.game)
+		return DinkParser.fromDinkToScripts(fileData, fileEntry.game)
 	elif fileEntry.fileExtension == '.bnut':
 		return NutParser.fromBytes(fileData)
 	elif fileEntry.fileExtension == '.yack':
