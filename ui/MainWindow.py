@@ -92,6 +92,17 @@ class MainWindow(QtWidgets.QMainWindow):
 		WidgetHelpers.createMenuAction(tabMenu, "Close tabs to the &left", self._closeTabsToLeft, "Closes all file display tabs to the left of the current tab")
 		WidgetHelpers.createMenuAction(tabMenu, "Close tabs to the &right", self._closeTabsToRight, "Closes all file display tabs to the right of the current tab")
 
+		linksMenu = self.menuBar().addMenu("&Links")
+		WidgetHelpers.createMenuAction(linksMenu, "&ThimbleMonkey on GitHub", lambda: QtGui.QDesktopServices.openUrl("https://github.com/Didero/ThimbleMonkey"))
+		WidgetHelpers.createMenuAction(linksMenu, "ThimbleMonkey &Releases", lambda: QtGui.QDesktopServices.openUrl("https://github.com/Didero/ThimbleMonkey/releases"))
+		linksMenu.addSeparator()
+		WidgetHelpers.createMenuAction(linksMenu, "Thimbleweed &Park", lambda: QtGui.QDesktopServices.openUrl("https://thimbleweedpark.com"))
+		WidgetHelpers.createMenuAction(linksMenu, "Delores on &GitHub", lambda: QtGui.QDesktopServices.openUrl("https://github.com/grumpygamer/DeloresDev"))
+		WidgetHelpers.createMenuAction(linksMenu, "&Delores on Steam", lambda: QtGui.QDesktopServices.openUrl("https://store.steampowered.com/app/1305720/Delores_A_Thimbleweed_Park_MiniAdventure"))
+		WidgetHelpers.createMenuAction(linksMenu, "Return To &Monkey Island", lambda: QtGui.QDesktopServices.openUrl("https://returntomonkeyisland.com"))
+		linksMenu.addSeparator()
+		WidgetHelpers.createMenuAction(linksMenu, "Terrible Toy&box", lambda: QtGui.QDesktopServices.openUrl("https://terribletoybox.com"))
+
 	def updateWindowTitle(self, titleSuffix: str = None):
 		if titleSuffix:
 			self.setWindowTitle(f"{QtWidgets.QApplication.applicationName()} - {titleSuffix}")
