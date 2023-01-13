@@ -1,5 +1,5 @@
 import json, os, traceback
-from typing import List
+from typing import List, Union
 from weakref import WeakValueDictionary
 
 import fsb5
@@ -149,7 +149,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def showFileData(self, fileEntryToShow: FileEntry):
 		dataToShow = GGPackParser.getConvertedPackedFile(fileEntryToShow)
-		widgetToShow: BaseFileEntryDisplayWidget = None
+		widgetToShow: Union[None, BaseFileEntryDisplayWidget] = None
 		if isinstance(dataToShow, str):
 			widgetToShow = TextDisplayWidget(fileEntryToShow, dataToShow)
 		elif isinstance(dataToShow, dict):
