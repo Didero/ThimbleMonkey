@@ -190,6 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			widgetToShow = SoundBankDisplayWidget(fileEntryToShow, dataToShow)
 		if not widgetToShow:
 			raise NotImplementedError(f"Showing files with extension '{fileEntryToShow.fileExtension}' has not been implemented yet")
+		fileEntryToShow.convertedData = dataToShow
 		newSubWindow = self.centerDisplayArea.addSubWindow(widgetToShow)
 		newSubWindow.setWindowTitle(fileEntryToShow.filename)
 		self._displayedFileEntries[fileEntryToShow] = newSubWindow
@@ -226,7 +227,10 @@ class MainWindow(QtWidgets.QMainWindow):
 					with open(filePath, 'wb') as saveFile:
 						saveFile.write(fileData)
 				else:
-					fileData = GGPackParser.getConvertedPackedFile(fileEntry)
+					if fileEntry.convertedData:
+						fileData = fileEntry.convertedData
+					else:
+						fileData = GGPackParser.getConvertedPackedFile(fileEntry)
 					# Convert data
 					if isinstance(fileData, str):
 						filePath += '.txt'
@@ -275,6 +279,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	@QtCore.Slot(FileEntry)
 	def _handleClosedSubwindow(self, fileEntryOfClosedSubwindow: FileEntry):
+		fileEntryOfClosedSubwindow.convertedData = None
 		self._displayedFileEntries.pop(fileEntryOfClosedSubwindow, None)
 
 	def _closeAllTabs(self):

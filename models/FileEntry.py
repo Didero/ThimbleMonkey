@@ -18,6 +18,10 @@ class FileEntry:
 
 		self._fileExtension: Union[None, str] = None
 		self.game: Game = game
+		# 'convertedData' can be set to the converted data that's parsed when a file entry is opened.
+		# This is useful when saving that data, so it doesn't need to be converted again
+		# To keep memory usage in check, it should be cleared again when this file entry tab is closed
+		self.convertedData = None
 
 	@property
 	def fileExtension(self) -> str:
