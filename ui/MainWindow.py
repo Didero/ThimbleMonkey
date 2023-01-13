@@ -261,6 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
 						with open(filePath, 'wb') as saveFile:
 							saveFile.write(fileData)
 			except Exception as e:
+				traceback.print_exc()
 				errors.append(f"Something went wrong while saving file '{fileEntry.filename}':\n{e}")
 		saveDuration = time.perf_counter() - startTime
 		if saveDuration > 60:
