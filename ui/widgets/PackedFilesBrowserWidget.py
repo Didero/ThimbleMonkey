@@ -122,3 +122,19 @@ class PackedFilesBrowserWidget(QtWidgets.QWidget):
 		for treeItemIndex in range(self._fileBrowser.topLevelItemCount()):
 			self._fileBrowser.topLevelItem(treeItemIndex).setHidden(False)
 		self._updateFileCountLabel()
+
+	def getFilteredFileEntries(self) -> List[FileEntry]:
+		fileEntries: List[FileEntry] = []
+		for treeItemIndex in range(self._fileBrowser.topLevelItemCount()):
+			treeItem = self._fileBrowser.topLevelItem(treeItemIndex)
+			if not treeItem.isHidden():
+				fileEntries.append(treeItem.data(self._FILE_ENTRY_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE))
+		return fileEntries
+
+	def getAllFileEntries(self) -> List[FileEntry]:
+		fileEntries: List[FileEntry] = []
+		for treeItemIndex in range(self._fileBrowser.topLevelItemCount()):
+			treeItem = self._fileBrowser.topLevelItem(treeItemIndex)
+			fileEntries.append(treeItem.data(self._FILE_ENTRY_COLUMN_INDEX, self._COLUMN_DATA_USER_ROLE))
+		return fileEntries
+

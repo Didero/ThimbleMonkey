@@ -17,11 +17,26 @@ def createButton(buttonText: str, onPressMethod: Callable, parentLayout: QtWidge
 	parentLayout.addWidget(button)
 	return button
 
-def showErrorMessage(title: str, message: str, parent: QtWidgets.QWidget = None):
+def _createMessageBox(title: str, message: str, icon, parent: QtWidgets.QWidget = None):
 	messageBox = QtWidgets.QMessageBox()
 	messageBox.setWindowTitle(title)
 	messageBox.setText(message)
-	messageBox.setIcon(QtWidgets.QMessageBox.Critical)
+	messageBox.setIcon(icon)
 	if parent:
 		messageBox.setParent(parent)
+	return messageBox
+
+def showErrorMessage(title: str, message: str, parent: QtWidgets.QWidget = None):
+	messageBox = _createMessageBox(title, message, QtWidgets.QMessageBox.Critical, parent)
+	messageBox.exec_()
+
+def askConfirmation(title: str, message: str, question: str, parent: QtWidgets.QWidget = None) -> bool:
+	messageBox = _createMessageBox(title, message, QtWidgets.QMessageBox.Question, parent)
+	messageBox.setInformativeText(question)
+	messageBox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+	reply = messageBox.exec_()
+	return reply == QtWidgets.QMessageBox.Yes
+
+def showInfoMessage(title: str, message: str, parent: QtWidgets.QWidget = None):
+	messageBox = _createMessageBox(title, message, QtWidgets.QMessageBox.Information, parent)
 	messageBox.exec_()

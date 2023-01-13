@@ -1,4 +1,5 @@
 import json, os, traceback
+import time
 from typing import List, Union
 from weakref import WeakValueDictionary
 
@@ -74,8 +75,14 @@ class MainWindow(QtWidgets.QMainWindow):
 		fileMenu = self.menuBar().addMenu("&File")
 		WidgetHelpers.createMenuAction(fileMenu, "&Load game folder...", self._browseForGamePath, "Load the game files in the provided folder")
 		fileMenu.addSeparator()
-		WidgetHelpers.createMenuAction(fileMenu, "&Save curent tab data", lambda: self.saveTabData(False), "Save tab data exactly how it's stored")
-		WidgetHelpers.createMenuAction(fileMenu, "&Convert and save current tab data", lambda: self.saveTabData(True), "Convert and save the tab data as something usable")
+		saveSubmenu = fileMenu.addMenu("&Save...")
+		convertAndSaveSubmenu = fileMenu.addMenu("&Convert and save...")
+		for submenu, shouldConvert, saveDialogTitlePrefix in ((saveSubmenu, False, "Save"), (convertAndSaveSubmenu, True, "Convert And Save")):
+			# 'isChecked' is a possible default value from PySide6, and we need to make 'shouldConvert' local to the lambda otherwise it'll just be the last value (in this case True)
+			WidgetHelpers.createMenuAction(submenu, "&current tab", lambda isChecked=False, shouldConvert=shouldConvert: self.saveFileEntries([self.getCurrentTabFileEntry()], shouldConvert, f"{saveDialogTitlePrefix} Current Tab"))
+			WidgetHelpers.createMenuAction(submenu, "&open tabs", lambda isChecked=False, shouldConvert=shouldConvert: self.saveFileEntries(list(self._displayedFileEntries.keys()), shouldConvert, f"{saveDialogTitlePrefix} Open Tabs"))
+			WidgetHelpers.createMenuAction(submenu, "&filtered files", lambda isChecked=False, shouldConvert=shouldConvert: self.saveFileEntries(self.packedFileBrowser.getFilteredFileEntries(), shouldConvert, f"{saveDialogTitlePrefix} Filtered Files"))
+			WidgetHelpers.createMenuAction(submenu, "&all files", lambda isChecked=False, shouldConvert=shouldConvert: self.saveFileEntries(self.packedFileBrowser.getAllFileEntries(), shouldConvert, f"{saveDialogTitlePrefix} All Files"))
 		fileMenu.addSeparator()
 		WidgetHelpers.createMenuAction(fileMenu, "E&xit", self.close, "Exits the application")
 
@@ -178,64 +185,82 @@ class MainWindow(QtWidgets.QMainWindow):
 		widgetToShow.close.connect(self._handleClosedSubwindow)
 		newSubWindow.show()
 
-	def saveTabData(self, shouldConvertData: bool):
-		"""
-		Saves the current tab's data to disk.
-		:param shouldConvertData: If True, saves exactly how it's stored in the game (ktxbz als ktxbz, ggdicted-json as ggdicted-json, ect). If False, Exports the data into something that can be used outside the game (ktxbz to png, gdicted-jsons to actual jsons, etc)
-		"""
+	def getCurrentTabFileEntry(self) -> Union[None, FileEntry]:
 		activeSubWindow = self.centerDisplayArea.activeSubWindow()
 		if activeSubWindow:
 			for fileEntry, subWindow in self._displayedFileEntries.items():
 				if subWindow == activeSubWindow:
-					# Some files don't need converting, they can be saved as-is
-					if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
-						# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
-						savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=fileEntry.filename)[0]
-						# If the user cancels, the dialog returns None
-						if savePath:
-							with open(savePath, 'wb') as saveFile:
-								saveFile.write(GGPackParser.getPackedFile(fileEntry))
-					else:
-						# Since files now don't get saved as their original extension, add a suffix if needed
-						fileData = GGPackParser.getConvertedPackedFile(fileEntry)
-						saveDialogFilterString = fileEntry.filename
-						if isinstance(fileData, str):
-							saveDialogFilterString += '.txt'
-						elif isinstance(fileData, dict):
-							saveDialogFilterString += '.txt'
-							firstDictEntry = next(iter(fileData.values()))
-							if isinstance(firstDictEntry, DinkScript):
-								fileData = DinkParser.fromDinkScriptDictToStrings(fileData)
-							elif isinstance(firstDictEntry, str):
-								fileData = json.dumps(fileData, indent=2)
-						elif isinstance(fileData, Image):
-							saveDialogFilterString += '.png'
-						elif isinstance(fileData, fsb5.FSB5):
-							fileData = BankParser.fromBankToBytesDict(fileData)
-						else:
-							raise ValueError(f"Unsupported file data format '{type(fileData).__name__}'")
+					return fileEntry
+		return None
 
-						if isinstance(fileData, dict):
-							savePath = QtWidgets.QFileDialog.getExistingDirectory(self, "Save Files To Folder", dir=self.gamePath)
+	def saveFileEntries(self, fileEntries: List[FileEntry], shouldConvertData: bool, saveDialogTitle="Save Files To Folder"):
+		if not fileEntries or fileEntries[0] is None:
+			WidgetHelpers.showErrorMessage("Nothing To Save", "There are no file entries to save")
+			return
+		elif len(fileEntries) > 100:
+			if not WidgetHelpers.askConfirmation("Many Files To Save", f"This would save {len(fileEntries):,} files, which might take a while.", "Are you sure you want to continue?"):
+				return
+		savePath = QtWidgets.QFileDialog.getExistingDirectory(self, saveDialogTitle, dir=self.gamePath)
+		if not savePath:
+			# User cancelled
+			return
+		startTime = time.perf_counter()
+		errors: List[str] = []
+		for fileEntry in fileEntries:
+			try:
+				filePath = os.path.join(savePath, fileEntry.filename)
+				# Load and possibly convert data
+				if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
+					fileData = GGPackParser.getPackedFile(fileEntry)
+					with open(filePath, 'wb') as saveFile:
+						saveFile.write(fileData)
+				else:
+					fileData = GGPackParser.getConvertedPackedFile(fileEntry)
+					# Convert data
+					if isinstance(fileData, str):
+						filePath += '.txt'
+					elif isinstance(fileData, dict):
+						filePath += '.txt'
+						firstDictEntry = next(iter(fileData.values()))
+						if isinstance(firstDictEntry, DinkScript):
+							fileData = DinkParser.fromDinkScriptDictToStrings(fileData)
 						else:
-							# 'getSaveFilename' returns a tuple with the path and the filter used, we only need the former, hence the '[0]' at the end
-							savePath = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", dir=saveDialogFilterString)[0]
-						# If the user cancels, the dialog returns None
-						if savePath:
-							if isinstance(fileData, Image):
-								fileData.save(savePath)
-							elif isinstance(fileData, dict):
-								# A dict is presumed to have filenames as keys and the file data for ach file as values. Save each in the selected folder
-								for filename, filebytes in fileData.items():
-									with open(os.path.join(savePath, filename), 'wb') as saveFile:
-										saveFile.write(filebytes)
-							else:
-								writeMode = 'w' if isinstance(fileData, str) else 'wb'
-								with open(savePath, writeMode, encoding='utf-8') as saveFile:
-									saveFile.write(fileData)
-					return
+							fileData = json.dumps(fileData, indent=2)
+					elif isinstance(fileData, Image):
+						filePath += '.png'
+					elif isinstance(fileData, fsb5.FSB5):
+						fileData = BankParser.fromBankToBytesDict(fileData)
+
+					# Save data
+					if isinstance(fileData, Image):
+						fileData.save(filePath)
+					elif isinstance(fileData, dict):
+						# A dict is presumed to have filenames as keys and the file data for ach file as values. Save each in the selected folder
+						for subfilename, subfilebytes in fileData.items():
+							with open(os.path.join(savePath, subfilename), 'wb') as saveFile:
+								saveFile.write(subfilebytes)
+					elif isinstance(fileData, str):
+						with open(filePath, 'w', encoding='utf-8') as saveFile:
+							saveFile.write(fileData)
+					else:
+						with open(filePath, 'wb') as saveFile:
+							saveFile.write(fileData)
+			except Exception as e:
+				errors.append(f"Something went wrong while saving file '{fileEntry.filename}':\n{e}")
+		else:
+			saveDuration = time.perf_counter() - startTime
+			if saveDuration > 60:
+				saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.1f} seconds"
 			else:
-				raise ValueError(f"Active subwindow and fileEntry not found in tab list")
+				saveDurationString = f"{saveDuration:.1f} seconds"
+			saveTypeString = "converting and saving" if shouldConvertData else "saving"
+			finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
+			if len(errors) > 0:
+				finishMessage += f"\n{len(errors):,} save errors:\n"
+				finishMessage += "\n".join(errors[:25])
+				if len(errors) > 25:
+					finishMessage += f"\n\n...and {len(errors) - 25:,} more"
+			WidgetHelpers.showInfoMessage(f"Finished {saveTypeString.title()}", finishMessage)
 
 	@QtCore.Slot(FileEntry)
 	def _handleClosedSubwindow(self, fileEntryOfClosedSubwindow: FileEntry):

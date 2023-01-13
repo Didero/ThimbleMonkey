@@ -63,10 +63,17 @@ You can open multiple files. They open in separate tabs.
 Because images (files ending in '.ktxbz' or '.png') and soundbanks (file ending in '.assets.bank') can take up quite a bit of memory, you can easily close a single tab by clicking the 'X' on the right of the tab bar. The 'Tabs' menu contains options to close multiple tabs at once.
 
 ### Saving data
-You can get files out of ThimbleMonkey in two ways:
-- By clicking the 'File' menu and selecting 'Save current tab data', you can save the data from the current tab just as it is stored in the game files. An image will be saved as a .ktxbz file, for instance
-- By clicking the 'File' menu and selecting 'Convert and save current tab data', you can save the data from the current tab in a way that other programs can read. An image will be saved as a PNG file, for instance
-- (Sidenote: '.assets.bank' files contain music files, these can be saved in bulk as described in the previous entry, or individually by opening one of the soundfiles and clicking the 'Save' button)
+There are two types of saving in ThimbleMonkey: saving data as-is, and saving converted data.  
+Saving data as-is is done by going to the 'File' menu and selecting 'Save...'. Selecting any of these options saves the applicable file(s) just as they are stored in the game files. For instance, an RtMI image will be saved as a .ktxbz file  
+Saving converted data is done by going to the 'File' menu and selecting 'Convert and save...'. Selecting any of these options saves the applicable file(s) in a way that other programs can read. For instance, an RtMI image will be saved as a PNG file  
+The four options in either menu are:
+- 'current tab': This saves the file from only the currently selected and opened file tab
+- 'open tabs': This saves the files from all the currently opened tabs. If only one tab is opened, this does the same thing as the previous option
+- 'filtered files': This saves all the files currently listed in the file list on the left. So if you typed '.ktxbz' into the filter field as described in 'Filtering the file list', this would save all the listed images. If no filter is set, this does the same thing as the next option, 'all files'
+- 'all files': This saves all the files currently loaded, regardless of the filter
+
+Converting and saving a lot of files at once can take a long time. As an example, converting and saving all the Return To Monkey Island files took 24 minutes on my computer, saving to an SSD.  
+So if you're saving a lot of files, a warning will pop up asking if you're sure. This allows you to narrow your filter or open tabs, or to prepare for a long wait.
 
 ## Limitations
 - The parsing of the main Delores and RtMI game script file, ending in '.dink', is not finished. The results kind of make sense, but since the parsing isn't complete, the result isn't always correct
