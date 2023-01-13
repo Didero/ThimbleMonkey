@@ -183,6 +183,7 @@ def createPackFile(filenamesToPack: Union[List[str], Tuple[str]], packFilename: 
 		packFile.write(decodeGameData(fileIndex, targetGame))
 
 def savePackedFile(fileEntry: FileEntry, savePath: str, shouldConvertData: bool):
+	"""Save the provided file entry to the provided path, optionally converted. The savepath should be a folder, the fileEntry's filename will be appended to that path"""
 	filePath = os.path.join(savePath, fileEntry.filename)
 	# Load and possibly convert data
 	if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
