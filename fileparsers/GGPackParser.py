@@ -9,6 +9,7 @@ import Keys, Utils
 from CustomExceptions import DecodeError, PackingError
 from enums.Game import Game
 from fileparsers import BankParser, DinkParser, GGDictParser, KtxParser, NutParser, YackParser
+from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
 
 
@@ -180,3 +181,45 @@ def createPackFile(filenamesToPack: Union[List[str], Tuple[str]], packFilename: 
 		packFile.write(encodedFilesData)
 		# And finally write the file index
 		packFile.write(decodeGameData(fileIndex, targetGame))
+
+def savePackedFile(fileEntry: FileEntry, savePath: str, shouldConvertData: bool):
+	filePath = os.path.join(savePath, fileEntry.filename)
+	# Load and possibly convert data
+	if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
+		fileData = getPackedFile(fileEntry)
+		with open(filePath, 'wb') as saveFile:
+			saveFile.write(fileData)
+	else:
+		if fileEntry.convertedData:
+			fileData = fileEntry.convertedData
+		else:
+			fileData = getConvertedPackedFile(fileEntry)
+		# Convert data
+		if isinstance(fileData, str):
+			filePath += '.txt'
+		elif isinstance(fileData, dict):
+			filePath += '.txt'
+			firstDictEntry = next(iter(fileData.values()))
+			if isinstance(firstDictEntry, DinkScript):
+				fileData = DinkParser.fromDinkScriptDictToStrings(fileData)
+			else:
+				fileData = json.dumps(fileData, indent=2)
+		elif isinstance(fileData, Image.Image):
+			filePath += '.png'
+		elif isinstance(fileData, fsb5.FSB5):
+			fileData = BankParser.fromBankToBytesDict(fileData)
+
+		# Save data
+		if isinstance(fileData, Image.Image):
+			fileData.save(filePath)
+		elif isinstance(fileData, dict):
+			# A dict is presumed to have filenames as keys and the file data for ach file as values. Save each in the selected folder
+			for subfilename, subfilebytes in fileData.items():
+				with open(os.path.join(savePath, subfilename), 'wb') as saveFile:
+					saveFile.write(subfilebytes)
+		elif isinstance(fileData, str):
+			with open(filePath, 'w', encoding='utf-8') as saveFile:
+				saveFile.write(fileData)
+		else:
+			with open(filePath, 'wb') as saveFile:
+				saveFile.write(fileData)

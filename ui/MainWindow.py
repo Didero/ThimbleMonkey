@@ -9,8 +9,7 @@ from PIL.Image import Image
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from enums.Game import Game
-from fileparsers import BankParser, GGPackParser
-from fileparsers import DinkParser
+from fileparsers import GGPackParser
 from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
 from ui import WidgetHelpers
@@ -220,46 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		errors: List[str] = []
 		for fileEntry in fileEntries:
 			try:
-				filePath = os.path.join(savePath, fileEntry.filename)
-				# Load and possibly convert data
-				if not shouldConvertData or fileEntry.fileExtension in ('.ogg', '.otf', '.png', '.tsv', '.ttf', '.txt', '.wav'):
-					fileData = GGPackParser.getPackedFile(fileEntry)
-					with open(filePath, 'wb') as saveFile:
-						saveFile.write(fileData)
-				else:
-					if fileEntry.convertedData:
-						fileData = fileEntry.convertedData
-					else:
-						fileData = GGPackParser.getConvertedPackedFile(fileEntry)
-					# Convert data
-					if isinstance(fileData, str):
-						filePath += '.txt'
-					elif isinstance(fileData, dict):
-						filePath += '.txt'
-						firstDictEntry = next(iter(fileData.values()))
-						if isinstance(firstDictEntry, DinkScript):
-							fileData = DinkParser.fromDinkScriptDictToStrings(fileData)
-						else:
-							fileData = json.dumps(fileData, indent=2)
-					elif isinstance(fileData, Image):
-						filePath += '.png'
-					elif isinstance(fileData, fsb5.FSB5):
-						fileData = BankParser.fromBankToBytesDict(fileData)
-
-					# Save data
-					if isinstance(fileData, Image):
-						fileData.save(filePath)
-					elif isinstance(fileData, dict):
-						# A dict is presumed to have filenames as keys and the file data for ach file as values. Save each in the selected folder
-						for subfilename, subfilebytes in fileData.items():
-							with open(os.path.join(savePath, subfilename), 'wb') as saveFile:
-								saveFile.write(subfilebytes)
-					elif isinstance(fileData, str):
-						with open(filePath, 'w', encoding='utf-8') as saveFile:
-							saveFile.write(fileData)
-					else:
-						with open(filePath, 'wb') as saveFile:
-							saveFile.write(fileData)
+				GGPackParser.savePackedFile(fileEntry, savePath, shouldConvertData)
 			except Exception as e:
 				traceback.print_exc()
 				errors.append(f"Something went wrong while saving file '{fileEntry.filename}':\n{e}")
