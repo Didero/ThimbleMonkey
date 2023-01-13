@@ -262,20 +262,19 @@ class MainWindow(QtWidgets.QMainWindow):
 							saveFile.write(fileData)
 			except Exception as e:
 				errors.append(f"Something went wrong while saving file '{fileEntry.filename}':\n{e}")
+		saveDuration = time.perf_counter() - startTime
+		if saveDuration > 60:
+			saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.1f} seconds"
 		else:
-			saveDuration = time.perf_counter() - startTime
-			if saveDuration > 60:
-				saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.1f} seconds"
-			else:
-				saveDurationString = f"{saveDuration:.1f} seconds"
-			saveTypeString = "converting and saving" if shouldConvertData else "saving"
-			finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
-			if len(errors) > 0:
-				finishMessage += f"\n{len(errors):,} save errors:\n"
-				finishMessage += "\n".join(errors[:25])
-				if len(errors) > 25:
-					finishMessage += f"\n\n...and {len(errors) - 25:,} more"
-			WidgetHelpers.showInfoMessage(f"Finished {saveTypeString.title()}", finishMessage)
+			saveDurationString = f"{saveDuration:.1f} seconds"
+		saveTypeString = "converting and saving" if shouldConvertData else "saving"
+		finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
+		if len(errors) > 0:
+			finishMessage += f"\n{len(errors):,} save errors:\n"
+			finishMessage += "\n".join(errors[:25])
+			if len(errors) > 25:
+				finishMessage += f"\n\n...and {len(errors) - 25:,} more"
+		WidgetHelpers.showInfoMessage(f"Finished {saveTypeString.title()}", finishMessage)
 
 	@QtCore.Slot(FileEntry)
 	def _handleClosedSubwindow(self, fileEntryOfClosedSubwindow: FileEntry):
