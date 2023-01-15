@@ -13,6 +13,7 @@ from fileparsers import GGPackParser
 from fileparsers.dinkhelpers.DinkScript import DinkScript
 from models.FileEntry import FileEntry
 from ui import WidgetHelpers
+from ui.dialogs.SaveProgressDialog import SaveProgressDialog
 from ui.widgets.BaseFileEntryDisplayWidget import BaseFileEntryDisplayWidget
 from ui.widgets.DinkDisplayWidget import DinkDisplayWidget
 from ui.widgets.FontDisplayWidget import FontDisplayWidget
@@ -216,13 +217,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			# User cancelled
 			return
 		startTime = time.perf_counter()
-		errors: List[str] = []
-		for fileEntry in fileEntries:
-			try:
-				GGPackParser.savePackedFile(fileEntry, savePath, shouldConvertData)
-			except Exception as e:
-				traceback.print_exc()
-				errors.append(f"Something went wrong while saving file '{fileEntry.filename}':\n{e}")
+		# Open the progress dialog, which also does the saving
+		saveProgressDialog = SaveProgressDialog(fileEntries, savePath, shouldConvertData, self)
+		# Show the results
 		saveDuration = time.perf_counter() - startTime
 		if saveDuration > 60:
 			saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.1f} seconds"
@@ -230,11 +227,10 @@ class MainWindow(QtWidgets.QMainWindow):
 			saveDurationString = f"{saveDuration:.1f} seconds"
 		saveTypeString = "converting and saving" if shouldConvertData else "saving"
 		finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
-		if len(errors) > 0:
-			finishMessage += f"\n{len(errors):,} save errors:\n"
-			finishMessage += "\n".join(errors[:25])
-			if len(errors) > 25:
-				finishMessage += f"\n\n...and {len(errors) - 25:,} more"
+		if len(saveProgressDialog.saveErrors) > 0:
+			finishMessage += f"\n{len(saveProgressDialog.saveErrors):,} save errors:"
+			for errorFileEntry, error in saveProgressDialog.saveErrors.items():
+				finishMessage += f"\n{errorFileEntry.filename}: {error}"
 		WidgetHelpers.showInfoMessage(f"Finished {saveTypeString.title()}", finishMessage)
 
 	@QtCore.Slot(FileEntry)
