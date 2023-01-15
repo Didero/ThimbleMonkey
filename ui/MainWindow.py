@@ -222,9 +222,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		# Show the results
 		saveDuration = time.perf_counter() - startTime
 		if saveDuration > 60:
-			saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.1f} seconds"
+			saveDurationString = f"{saveDuration // 60:.0f} minutes and {saveDuration % 60:.0f} seconds"
 		else:
-			saveDurationString = f"{saveDuration:.1f} seconds"
+			saveDurationString = f"{saveDuration:.0f} seconds"
 		saveTypeString = "converting and saving" if shouldConvertData else "saving"
 		finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
 		if len(saveProgressDialog.saveErrors) > 0:
