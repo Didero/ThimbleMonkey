@@ -23,6 +23,7 @@ class SaveProgressDialog(QtWidgets.QDialog):
 		self._progressBar.setMinimum(0)
 		self._progressBar.setMaximum(len(fileEntriesToSave))
 		self._progressBar.setFormat("%v / %m - %p %")
+		self._progressBar.setValue(0)
 		layout.addWidget(self._progressBar)
 
 		self._durationLabel = QtWidgets.QLabel()
