@@ -25,11 +25,26 @@ class SaveProgressDialog(QtWidgets.QDialog):
 		self._progressBar.setFormat("%v / %m - %p %")
 		layout.addWidget(self._progressBar)
 
+		self._durationLabel = QtWidgets.QLabel()
+		layout.addWidget(self._durationLabel)
+
+		self._secondsPassed: int = -1  # -1 because we're going to update the count immediately
+		self._timer = QtCore.QTimer(self)
+		self._timer.timeout.connect(self._onTimerUpdate)
+		self._timer.setInterval(1000)
+		self._onTimerUpdate()  # Fill in the duration label immediately, instead of after the first update
+		self._timer.start()
+
 		runner = _Runner(fileEntriesToSave, savePath, shouldConvertData)
 		runner.fileEntrySavedSignal.connect(self._onProgressUpdate)
 		runner.finishedSignal.connect(self._onFinished)
 		QtCore.QThreadPool.globalInstance().start(runner)
 		self.exec_()
+
+	@QtCore.Slot()
+	def _onTimerUpdate(self):
+		self._secondsPassed += 1
+		self._durationLabel.setText(f"Time elapsed: {self._secondsPassed // 60:.0f} minutes, {self._secondsPassed % 60:.0f} seconds")
 
 	@QtCore.Slot(FileEntry, BaseException)
 	def _onProgressUpdate(self, fileEntry: FileEntry, error=None):
