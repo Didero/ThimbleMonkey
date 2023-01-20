@@ -28,7 +28,7 @@ from ui.widgets.TextDisplayWidget import TextDisplayWidget
 class MainWindow(QtWidgets.QMainWindow):
 	def __init__(self, pathToLoadOnStart: str = None, filterOnStart: str = None):
 		super().__init__()
-		self.resize(1920, 1280)
+		self.resize(1920, 1080)
 		self._centerWindowOnScreen()
 		self._initUi()
 		self._initMenuBar()
