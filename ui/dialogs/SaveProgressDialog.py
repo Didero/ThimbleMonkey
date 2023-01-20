@@ -89,9 +89,10 @@ class _Runner(QtCore.QRunnable, QtCore.QObject):
 	@QtCore.Slot()
 	def run(self):
 		with concurrent.futures.ProcessPoolExecutor(10) as pool:
-			futures = []
+			futureToFileEntry: Dict[concurrent.futures.Future, FileEntry] = {}
 			for fileEntry in self._fileEntriesToSave:
-				futures.append(pool.submit(GGPackParser.savePackedFile, fileEntry, self._savePath, self._shouldConvertData))
-			for completedFuture in concurrent.futures.as_completed(futures):
-				self.fileEntrySavedSignal.emit(fileEntry, completedFuture.exception())
+				future = pool.submit(GGPackParser.savePackedFile, fileEntry, self._savePath, self._shouldConvertData)
+				futureToFileEntry[future] = fileEntry
+			for completedFuture in concurrent.futures.as_completed(futureToFileEntry):
+				self.fileEntrySavedSignal.emit(futureToFileEntry[completedFuture], completedFuture.exception())
 		self.finishedSignal.emit()
