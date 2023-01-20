@@ -33,6 +33,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self._initUi()
 		self._initMenuBar()
 		self.setStatusBar(QtWidgets.QStatusBar(self))
+		# Accept drops to enable drag&drop-ing a folder to load it (see the methods 'dragEnterEvent' and 'dropEvent')
+		self.setAcceptDrops(True)
+
 		self.gamePath: str = ''
 		# Store the opened subwindows in here, so we can't open one file multiple times (Don't use filenames for this, with mods there can be duplicates)
 		self._displayedFileEntries: WeakValueDictionary[FileEntry, QtWidgets.QMdiSubWindow] = WeakValueDictionary()
@@ -270,3 +273,26 @@ class MainWindow(QtWidgets.QMainWindow):
 		if closeAfterCurrent:
 			for subwindow in subwindowList[activeSubwindowIndex + 1:]:
 				subwindow.close()
+
+	def dragEnterEvent(self, event: QtGui.QDragEnterEvent) -> None:
+		# Handle a file or folder dragged onto the window. Only allow folders
+		if not event.mimeData().hasUrls():
+			return event.ignore()
+		urls = event.mimeData().urls()
+		# Only accept a single dropped item, to avoid confusion
+		if len(urls) != 1:
+			return event.ignore()
+		# Only accept a folder as a new gamepath
+		url: QtCore.QUrl = urls[0]
+		if not url.isLocalFile():
+			return event.ignore()
+		dragFilePath = url.toLocalFile()
+		if not os.path.isdir(dragFilePath):
+			return event.ignore()
+		# Everything's good, mark the dragged item as acceptable
+		event.accept()
+
+	def dropEvent(self, event: QtGui.QDropEvent) -> None:
+		# We can just get the path without any checks, because those checks are done in the 'dragEnterEvent' method
+		dropPath = event.mimeData().urls()[0].toLocalFile()
+		self.setGamePath(dropPath)
