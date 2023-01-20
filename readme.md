@@ -48,10 +48,12 @@ There are some guides on the internet on how to do that, but briefly:
 
 ## Using ThimbleMonkey
 ### Loading game files
-First you need to know where the game files are stored. You can find this location in Steam by right-clicking one of the supported games, selecting 'Manage' and then 'Browse Local Files'. Once you know the location, there's two ways to load the game files:
+First you need to know where the game files are stored.  
+You can find this location in Steam by right-clicking one of the supported games, selecting 'Manage' and then 'Browse Local Files'.  
+Once you know the location, there's two ways to load the game files:
 #### Through the File menu:
 - Click 'File' and select 'Load game folder...'. This opens up a file browser
-- Navigate to where your Thimbleweed Park, Delores, and/or Return To Monkey Island game files are. . No files show up in the file browser, because you're selecting a whole folder
+- Navigate to where your Thimbleweed Park, Delores, and/or Return To Monkey Island game files are. No files show up in the file browser, because you're selecting a whole folder
 - Click 'Select folder'
 #### Drag & Drop:
 - Drag the game folder onto ThimbleMonkey
