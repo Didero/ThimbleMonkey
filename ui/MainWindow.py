@@ -226,12 +226,15 @@ class MainWindow(QtWidgets.QMainWindow):
 		else:
 			saveDurationString = f"{saveDuration:.0f} seconds"
 		saveTypeString = "converting and saving" if shouldConvertData else "saving"
+		finishTitle = f"Finished {saveTypeString.title()}"
 		finishMessage = f"Finished {saveTypeString} {len(fileEntries):,} files to\n{savePath}\nin {saveDurationString}."
 		if len(saveProgressDialog.saveErrors) > 0:
 			finishMessage += f"\n{len(saveProgressDialog.saveErrors):,} save errors:"
 			for errorFileEntry, error in saveProgressDialog.saveErrors.items():
 				finishMessage += f"\n{errorFileEntry.filename}: {error}"
-		WidgetHelpers.showInfoMessage(f"Finished {saveTypeString.title()}", finishMessage)
+			WidgetHelpers.showErrorMessage(finishTitle, finishMessage)
+		else:
+			WidgetHelpers.showInfoMessage(finishTitle, finishMessage)
 
 	@QtCore.Slot(FileEntry)
 	def _handleClosedSubwindow(self, fileEntryOfClosedSubwindow: FileEntry):
