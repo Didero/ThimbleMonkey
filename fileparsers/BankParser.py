@@ -9,6 +9,7 @@ import fsb5, fsb5.vorbis_headers
 import pyogg, pyogg.ogg, pyogg.vorbis
 
 import Keys
+from enums.Game import Game
 
 
 _byteReverseLookup = []
@@ -21,7 +22,7 @@ for i in range(256):
 del i, rev
 
 
-def _decode(bytesToDecode: bytes) -> bytearray:
+def _decodeRtmi(bytesToDecode: bytes) -> bytearray:
     numberOfSections = 8
     startTime = time.perf_counter()
     numberOfBytesToDecode = len(bytesToDecode)
@@ -54,12 +55,14 @@ def __decodeSection(sectionToDecode: bytes, startIndex: int) -> Tuple[int, bytea
             keyIndex += 1
     return (startIndex, decodedBytes)
 
-def fromBytesToBank(sourceData: bytes, shouldDecodeData: bool = True) -> fsb5.FSB5:
+def fromBytesToBank(sourceData: bytes, game: Game, shouldDecodeData: bool = True) -> fsb5.FSB5:
     """Converts the BANK music and sound data into something useful"""
-    if shouldDecodeData:
-        decodedSourceData = _decode(sourceData)
-    else:
+    if not shouldDecodeData:
         decodedSourceData = sourceData
+    elif game == Game.RETURN_TO_MONKEY_ISLAND:
+        decodedSourceData = _decodeRtmi(sourceData)
+    else:
+        raise NotImplementedError(f"Decoding soundbanks for game '{game}' has not been implemented")
     fsbStartIndex = decodedSourceData.index(b'FSB5')
     soundbank = fsb5.FSB5(decodedSourceData[fsbStartIndex:])
     return soundbank

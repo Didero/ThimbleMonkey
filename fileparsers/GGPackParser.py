@@ -148,7 +148,7 @@ def getConvertedPackedFile(fileEntry: FileEntry) -> Union[bytes, Dict, fsb5.FSB5
 		return fileData
 	elif fileEntry.fileExtension == '.assets.bank':
 		# Music bank file, no need to convert anything
-		return BankParser.fromBytesToBank(fileData)
+		return BankParser.fromBytesToBank(fileData, fileEntry.game)
 	print(f"Unknown/unsupported file extension '{fileEntry.fileExtension}' for file entry '{fileEntry}'")
 	return fileData
 
