@@ -153,6 +153,9 @@ class MainWindow(QtWidgets.QMainWindow):
 				elif fn.endswith('.app'):
 					# MacOS stores its games inside an .app executable folder, find the ggpacks inside there
 					packPaths.extend(self._getPackFilesInFolder(os.path.join(gameFilePath, 'Contents', 'Resources')))
+				elif fn == 'Contents':
+					# If the .app folder itself is dragged onto ThimbleMonkey, we need to look inside the Contents/Resources folder
+					packPaths.extend(self._getPackFilesInFolder(os.path.join(gameFilePath, 'Resources')))
 			elif '.ggpack' in fn:
 				packPaths.append(gameFilePath)
 		return packPaths
