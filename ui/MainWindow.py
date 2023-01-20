@@ -121,7 +121,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def setGamePath(self, gamePath: str):
 		packedFileEntries: List[FileEntry] = []
-		for packFilePath in self._getPackFilesInFolder(gamePath):
+		packedFilePaths = self._getPackFilesInFolder(gamePath)
+		if len(packedFilePaths) == 0:
+			WidgetHelpers.showErrorMessage("No files found", f"The folder\n{gamePath}\ndoes not contain any supported game files")
+			return
+		for packFilePath in packedFilePaths:
 			try:
 				fileIndex = GGPackParser.getFileIndex(packFilePath)
 				game = Game.ggpackPathToGameName(packFilePath)
