@@ -20,11 +20,14 @@ class SaveProgressDialog(QtWidgets.QDialog):
 		self.setLayout(layout)
 
 		self._progressBar = QtWidgets.QProgressBar()
+		layout.addWidget(self._progressBar)
 		self._progressBar.setMinimum(0)
 		self._progressBar.setMaximum(len(fileEntriesToSave))
-		self._progressBar.setFormat("%v / %m - %p %")
 		self._progressBar.setValue(0)
-		layout.addWidget(self._progressBar)
+		# On MacOS, the progress text doesn't show, so make our own label to show progress
+		self._progressBar.setTextVisible(False)
+		self._progressLabel = QtWidgets.QLabel(f"Files saved: 0 / {self._progressBar.maximum()} - 0 %")
+		layout.addWidget(self._progressLabel)
 
 		self._durationLabel = QtWidgets.QLabel()
 		layout.addWidget(self._durationLabel)
@@ -50,6 +53,7 @@ class SaveProgressDialog(QtWidgets.QDialog):
 	@QtCore.Slot(FileEntry, BaseException)
 	def _onProgressUpdate(self, fileEntry: FileEntry, error=None):
 		self._progressBar.setValue(self._progressBar.value() + 1)
+		self._progressLabel.setText(f"Files saved: {self._progressBar.value():,} / {self._progressBar.maximum():,} - {100 * self._progressBar.value() / self._progressBar.maximum():.0f} %")
 		if error:
 			self.saveErrors[fileEntry] = error
 
