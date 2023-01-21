@@ -63,7 +63,9 @@ def fromBytesToBank(sourceData: bytes, game: Game, shouldDecodeData: bool = True
         decodedSourceData = _decodeRtmi(sourceData)
     else:
         raise NotImplementedError(f"Decoding soundbanks for game '{game}' has not been implemented")
-    fsbStartIndex = decodedSourceData.index(b'FSB5')
+    fsbStartIndex = decodedSourceData.find(b'FSB5')
+    if fsbStartIndex < 0:
+        raise ValueError("Provided data can't be parsed as a soundbank")
     soundbank = fsb5.FSB5(decodedSourceData[fsbStartIndex:])
     return soundbank
 
