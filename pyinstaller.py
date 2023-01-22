@@ -33,13 +33,18 @@ if __name__ == '__main__':
 	print("Copying readme.md to readme.txt")
 	shutil.copy2('readme.md', os.path.join('dist', 'readme.txt'))
 
-	with zipfile.ZipFile(os.path.join('dist', f'{programName}.zip'), 'w') as distZip:
-		print("Creating distribution zipfile " + distZip.filename)
-		# .exe is Windows, .app is MacOS, no extension is Linux
-		for filename in ('LICENSE', 'readme.md', 'readme.txt', f'{programName}.exe', f'{programName}.app', programName):
-			filepath = os.path.join('dist', filename)
-			if os.path.exists(filepath):
-				print(f"Adding {filename} to distribution zipfile")
-				distZip.write(filepath, filename)
+	# Check on which OS we're building by file extension, .exe is Windows, .app is MacOS, no extension is Linux (On MacOS a no-extension file is generated too, but we ignore that)
+	for programFilename, osName in ((f'{programName}.exe', 'Windows'), (f'{programName}.app', 'MacOS'), (programName, 'Linux')):
+		programFilepath = os.path.join('dist', programFilename)
+		if os.path.exists(programFilepath):
+			with zipfile.ZipFile(os.path.join('dist', f'{programName}_{osName}.zip'), 'w') as distZip:
+				print(f"Creating distribution zipfile {distZip.filename}")
+				for filename in ('LICENSE', 'readme.md', 'readme.txt', programFilename):
+					filepath = os.path.join('dist', filename)
+					print(f"Adding {filename} to distribution zipfile")
+					distZip.write(filepath, filename)
+			break
+	else:
+		print("Unable to determine OS, not creating a distribution zip")
 
 	print(f"Build took {time.perf_counter() - startTime} seconds")
