@@ -220,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			WidgetHelpers.showErrorMessage("Nothing To Save", "There are no file entries to save")
 			return
 		elif len(fileEntries) > 100:
-			if not WidgetHelpers.askConfirmation("Many Files To Save", f"This would save {len(fileEntries):,} files, which might take a while.", "Are you sure you want to continue?"):
+			if not WidgetHelpers.askConfirmation("Many Files To Save", f"This would save {len(fileEntries):,} files, which might take a while,\nand might use a lot of memory and/or CPU power.", "Are you sure you want to continue?"):
 				return
 		savePath = QtWidgets.QFileDialog.getExistingDirectory(self, saveDialogTitle, dir=self.gamePath)
 		if not savePath:
