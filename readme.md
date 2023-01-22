@@ -81,8 +81,7 @@ The four options in either menu are:
 - 'filtered files': This saves all the files currently listed in the file list on the left. So if you typed '.ktxbz' into the filter field as described in 'Filtering the file list', this would save all the listed images. If no filter is set, this does the same thing as the next option, 'all files'
 - 'all files': This saves all the files currently loaded, regardless of the filter
 
-Converting and saving a lot of files at once can take a long time. As an example, converting and saving all the Return To Monkey Island files took 24 minutes on my computer, saving to an SSD.  
-So if you're saving a lot of files, a warning will pop up asking if you're sure. This allows you to narrow your filter or open tabs, or to prepare for a long wait.
+Converting and saving a lot of files at once can use a lot of memory and CPU, so if you're saving a lot of files a warning will pop up asking if you're sure. This allows you to cancel out to narrow your filter or open tabs, or to proceed if you're sure
 
 ## Limitations
 - The parsing of the main Delores and RtMI game script file, ending in '.dink', is not finished. The results kind of make sense, but since the parsing isn't complete, the result isn't always correct
