@@ -107,10 +107,10 @@ class MainWindow(QtWidgets.QMainWindow):
 		WidgetHelpers.createMenuAction(linksMenu, "Terrible Toy&box", lambda: QtGui.QDesktopServices.openUrl("https://terribletoybox.com"))
 
 	def updateWindowTitle(self, titleSuffix: str = None):
+		windowTitle = f"{QtWidgets.QApplication.applicationName()} v1.0.0"
 		if titleSuffix:
-			self.setWindowTitle(f"{QtWidgets.QApplication.applicationName()} - {titleSuffix}")
-		else:
-			self.setWindowTitle(QtWidgets.QApplication.applicationName())
+			windowTitle += f" - {titleSuffix}"
+		self.setWindowTitle(windowTitle)
 
 	@QtCore.Slot()
 	def _browseForGamePath(self):
