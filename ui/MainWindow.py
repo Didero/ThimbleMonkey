@@ -53,7 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.move(frameGm.topLeft())
 
 	def _initUi(self):
-		self.setWindowTitle(QtWidgets.QApplication.applicationName())
+		self.updateWindowTitle()
 		# Create the central widget that will hold all our layouts and controls
 		centerWidget = QtWidgets.QSplitter(self)
 		centerWidget.setContentsMargins(0, 0, 0, 0)
