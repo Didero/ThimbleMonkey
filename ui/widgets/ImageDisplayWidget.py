@@ -17,6 +17,7 @@ class ImageDisplayWidget(QtWidgets.QGraphicsView, BaseFileEntryDisplayWidget):
 
 		self._baseImage = image
 		self._imageItem: QtWidgets.QGraphicsPixmapItem = self._scene.addPixmap(self._baseImage)
+		self._imageItem.setTransformationMode(QtCore.Qt.TransformationMode.SmoothTransformation)
 		self._fitImageIfTooLarge()
 		self.setScene(self._scene)
 
