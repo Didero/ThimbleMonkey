@@ -191,11 +191,11 @@ def savePackedFile(fileEntry: FileEntry, savePath: str, shouldConvertData: bool)
 		with open(filePath, 'wb') as saveFile:
 			saveFile.write(fileData)
 	else:
+		# Convert data
 		if fileEntry.convertedData:
 			fileData = fileEntry.convertedData
 		else:
 			fileData = getConvertedPackedFile(fileEntry)
-		# Convert data
 		if isinstance(fileData, str):
 			filePath += '.txt'
 		elif isinstance(fileData, dict):
